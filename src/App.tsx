@@ -10,6 +10,7 @@ import { AppConfigManager } from './components/Config/AppConfigManager';
 import { BaseMiniAppView } from './components/MiniApp/BaseMiniAppView';
 import { TransactionLogDrawer } from './components/TransactionLogDrawer';
 import { QuickActionsMenu } from './components/QuickActions/QuickActionsMenu';
+import { QuickActionsSidebar } from './components/QuickActions/QuickActionsSidebar';
 import { BridgeStatusModal } from './components/QuickActions/BridgeStatusModal';
 import { 
   BASE_NETWORKS, 
@@ -194,8 +195,17 @@ export default function App() {
         userTokenBalance={userTokenBalance}
       />
 
+      {/* Persistent Left Vertical Quick Actions Sidebar (Glassmorphism) */}
+      <QuickActionsSidebar
+        currentNetwork={currentNetwork}
+        activeTab={activeTab}
+        onOpenBridgeStatus={() => setIsBridgeModalOpen(true)}
+        onRequestFaucet={handleFaucetClaim}
+        onSelectTab={(tabId) => setActiveTab(tabId)}
+      />
+
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 md:pl-20 py-6 sm:py-8">
         {activeTab === 'miniapp' && (
           <BaseMiniAppView
             currentNetwork={currentNetwork}
