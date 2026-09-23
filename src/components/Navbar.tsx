@@ -17,9 +17,10 @@ import {
   Settings,
   Smartphone
 } from 'lucide-react';
-import { BaseNetwork, NetworkId, WalletAccount } from '../types/base';
+import { BaseNetwork, NetworkId, WalletAccount, AssetMetadata, CapTableHolder, TxLogEntry, ScenarioFlow } from '../types/base';
 import { BASE_NETWORKS } from '../data/mockBaseData';
 import { shortenAddress, formatNumber, triggerConfetti } from '../utils/web3Helper';
+import { GlobalSearchBar } from './Search/GlobalSearchBar';
 
 interface NavbarProps {
   activeTab: string;
@@ -31,6 +32,10 @@ interface NavbarProps {
   onFaucetClaim: () => void;
   tokenSymbol: string;
   userTokenBalance: number;
+  asset: AssetMetadata;
+  holders?: CapTableHolder[];
+  logs?: TxLogEntry[];
+  onSelectSimulatorFlow?: (flowId: ScenarioFlow) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -43,6 +48,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   onFaucetClaim,
   tokenSymbol,
   userTokenBalance,
+  asset,
+  holders = [],
+  logs = [],
+  onSelectSimulatorFlow,
 }) => {
   const [showNetworkMenu, setShowNetworkMenu] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -151,9 +160,9 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Main Navbar */}
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 gap-2 sm:gap-4">
           {/* Logo & Brand */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <div 
               onClick={() => setActiveTab('simulator')}
               className="flex items-center gap-2.5 cursor-pointer group"
@@ -175,8 +184,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
+          {/* Global Search Bar (Look up B20 Assets, Tx Logs & Guides) */}
+          <div className="flex-1 max-w-[200px] sm:max-w-xs md:max-w-sm lg:max-w-md">
+            <GlobalSearchBar
+              asset={asset}
+              holders={holders}
+              logs={logs}
+              currentNetwork={currentNetwork}
+              onSelectTab={setActiveTab}
+              onSelectFlow={onSelectSimulatorFlow}
+            />
+          </div>
+
           {/* Center Tabs (Desktop) */}
-          <nav className="hidden lg:flex items-center gap-1 bg-[#14161c] p-1 rounded-xl border border-[#232730]">
+          <nav className="hidden xl:flex items-center gap-1 bg-[#14161c] p-1 rounded-xl border border-[#232730] shrink-0">
             {navTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -198,7 +219,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Right Action Cluster */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
             {/* Faucet Button */}
             <button
               onClick={triggerFaucet}
@@ -368,8 +389,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Mobile Navigation Row */}
-        <div className="lg:hidden border-t border-[#1c1f26] bg-[#0c0e12] px-3 py-2 overflow-x-auto flex gap-1.5">
+        {/* Mobile / Tablet Navigation Row */}
+        <div className="xl:hidden border-t border-[#1c1f26] bg-[#0c0e12] px-3 py-2 overflow-x-auto flex gap-1.5">
           {navTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;

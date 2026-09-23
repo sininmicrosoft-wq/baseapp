@@ -193,6 +193,10 @@ export default function App() {
         onFaucetClaim={handleFaucetClaim}
         tokenSymbol={asset.symbol}
         userTokenBalance={userTokenBalance}
+        asset={asset}
+        holders={holders}
+        logs={logs}
+        onSelectSimulatorFlow={handleSelectSimulatorFlow}
       />
 
       {/* Persistent Left Vertical Quick Actions Sidebar (Glassmorphism) */}
