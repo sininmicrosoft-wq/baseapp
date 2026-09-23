@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowDownUp, 
   ExternalLink, 
@@ -28,8 +28,17 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
   onRequestFaucet,
   onSelectTab,
 }) => {
+  const [mounted, setMounted] = useState(false);
   const [faucetClaimed, setFaucetClaimed] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  // Trigger subtle slide-in + scale entrance effect on initial load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 40);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleFaucet = () => {
     setFaucetClaimed(true);
@@ -52,11 +61,22 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
       onMouseLeave={() => setIsHovered(false)}
       className="fixed left-3 sm:left-4 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center"
     >
-      {/* Glassmorphism Sidebar Container */}
-      <div className="relative flex flex-col items-center gap-2 p-2 rounded-2xl bg-[#111317]/85 backdrop-blur-xl border border-[#262b36]/90 shadow-2xl shadow-black/80 ring-1 ring-white/5 transition-all duration-300">
+      {/* Glassmorphism Sidebar Container with entrance animation & scale effect */}
+      <div 
+        className={`relative flex flex-col items-center gap-2 p-2 rounded-2xl bg-[#111317]/85 backdrop-blur-xl border border-[#262b36]/90 shadow-2xl shadow-black/80 ring-1 ring-white/5 transition-all duration-700 cubic-bezier(0.16,1,0.3,1) transform ${
+          mounted 
+            ? 'opacity-100 translate-x-0 scale-100 blur-0' 
+            : 'opacity-0 -translate-x-8 scale-90 blur-sm pointer-events-none'
+        } ${isHovered ? 'border-[#384255] shadow-[#0052ff]/10 ring-white/10' : ''}`}
+      >
         
         {/* Brand / Header Indicator */}
-        <div className="relative group flex items-center justify-center p-2 rounded-xl text-[#0052ff] hover:bg-[#0052ff]/15 transition-colors">
+        <div 
+          className={`relative group flex items-center justify-center p-2 rounded-xl text-[#0052ff] hover:bg-[#0052ff]/15 transition-all duration-500 ${
+            mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'
+          }`}
+          style={{ transitionDelay: '80ms' }}
+        >
           <div className="h-6 w-6 rounded-lg bg-[#0052ff]/20 flex items-center justify-center border border-[#0052ff]/30">
             <Zap className="h-3.5 w-3.5 text-[#3c8aff]" />
           </div>
@@ -71,7 +91,12 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
         <div className="w-6 h-px bg-[#232730]" />
 
         {/* BUTTON 1: Bridge Status */}
-        <div className="relative group">
+        <div 
+          className={`relative group transition-all duration-500 ${
+            mounted ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-4 scale-95'
+          }`}
+          style={{ transitionDelay: '140ms' }}
+        >
           <button
             onClick={onOpenBridgeStatus}
             aria-label="Check Bridge Status"
@@ -97,7 +122,12 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
         </div>
 
         {/* BUTTON 2: Explorer */}
-        <div className="relative group">
+        <div 
+          className={`relative group transition-all duration-500 ${
+            mounted ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-4 scale-95'
+          }`}
+          style={{ transitionDelay: '200ms' }}
+        >
           <button
             onClick={handleOpenExplorer}
             aria-label="View Explorer"
@@ -117,7 +147,12 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
         </div>
 
         {/* BUTTON 3: Faucet */}
-        <div className="relative group">
+        <div 
+          className={`relative group transition-all duration-500 ${
+            mounted ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-4 scale-95'
+          }`}
+          style={{ transitionDelay: '260ms' }}
+        >
           <button
             onClick={handleFaucet}
             aria-label="Request Faucet Funds"
@@ -145,7 +180,12 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
         </div>
 
         {/* BUTTON 4: Settings (App Config) */}
-        <div className="relative group">
+        <div 
+          className={`relative group transition-all duration-500 ${
+            mounted ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-4 scale-95'
+          }`}
+          style={{ transitionDelay: '320ms' }}
+        >
           <button
             onClick={() => onSelectTab('config')}
             aria-label="Settings and App Config"
@@ -170,7 +210,12 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
         <div className="w-6 h-px bg-[#232730]" />
 
         {/* BONUS BUTTON: Mini App View */}
-        <div className="relative group">
+        <div 
+          className={`relative group transition-all duration-500 ${
+            mounted ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-4 scale-95'
+          }`}
+          style={{ transitionDelay: '380ms' }}
+        >
           <button
             onClick={() => onSelectTab('miniapp')}
             aria-label="Switch to Mini App Mode"
