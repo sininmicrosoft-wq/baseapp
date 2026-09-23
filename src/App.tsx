@@ -6,11 +6,13 @@ import { CapTableManager } from './components/B20Studio/CapTableManager';
 import { SolidityCodeViewer } from './components/ContractStudio/SolidityCodeViewer';
 import { BasePaymasterDemo } from './components/Ecosystem/BasePaymasterDemo';
 import { BaseDocsGuides } from './components/DocsViewer/BaseDocsGuides';
+import { AppConfigManager } from './components/Config/AppConfigManager';
 import { TransactionLogDrawer } from './components/TransactionLogDrawer';
 import { 
   BASE_NETWORKS, 
   INITIAL_ASSET, 
-  INITIAL_HOLDERS 
+  INITIAL_HOLDERS,
+  DEFAULT_APP_CONFIG
 } from './data/mockBaseData';
 import { 
   AssetMetadata, 
@@ -18,7 +20,8 @@ import {
   CapTableHolder, 
   ScenarioFlow, 
   TxLogEntry, 
-  WalletAccount 
+  WalletAccount,
+  AppConfig
 } from './types/base';
 import { generateTxHash, triggerConfetti } from './utils/web3Helper';
 
@@ -29,6 +32,50 @@ export default function App() {
   );
   const [asset, setAsset] = useState<AssetMetadata>(INITIAL_ASSET);
   const [holders, setHolders] = useState<CapTableHolder[]>(INITIAL_HOLDERS);
+
+  // Application & Network Configuration
+  const [config, setConfig] = useState<AppConfig>(() => {
+    try {
+      const saved = localStorage.getItem('base_app_config');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to parse saved config from localStorage', e);
+    }
+    return DEFAULT_APP_CONFIG;
+  });
+
+  const handleSaveConfig = (newConfig: AppConfig) => {
+    setConfig(newConfig);
+    try {
+      localStorage.setItem('base_app_config', JSON.stringify(newConfig));
+    } catch (e) {
+      console.error('Failed to save config to localStorage', e);
+    }
+  };
+
+  const handleUpdateNetworkRpc = (networkId: string, newRpc: string) => {
+    if (BASE_NETWORKS[networkId]) {
+      BASE_NETWORKS[networkId].rpcUrl = newRpc;
+    }
+    setCurrentNetwork((prev) => {
+      if (prev.id === networkId) {
+        return { ...prev, rpcUrl: newRpc };
+      }
+      return prev;
+    });
+  };
+
+  const handleImportState = (
+    newAsset: AssetMetadata,
+    newHolders: CapTableHolder[],
+    newConfig?: AppConfig
+  ) => {
+    setAsset(newAsset);
+    setHolders(newHolders);
+    if (newConfig) {
+      handleSaveConfig(newConfig);
+    }
+  };
 
   // Connected Wallet State
   const [wallet, setWallet] = useState<WalletAccount>({
@@ -189,6 +236,19 @@ export default function App() {
         {activeTab === 'guides' && (
           <BaseDocsGuides
             onSelectSimulatorFlow={handleSelectSimulatorFlow}
+          />
+        )}
+
+        {activeTab === 'config' && (
+          <AppConfigManager
+            config={config}
+            onSaveConfig={handleSaveConfig}
+            currentNetwork={currentNetwork}
+            onUpdateNetworkRpc={handleUpdateNetworkRpc}
+            asset={asset}
+            holders={holders}
+            onImportState={handleImportState}
+            onAddTxLog={handleAddTxLog}
           />
         )}
       </main>

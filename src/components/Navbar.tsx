@@ -13,7 +13,8 @@ import {
   Sparkles,
   BookOpen,
   PlusCircle,
-  Coins
+  Coins,
+  Settings
 } from 'lucide-react';
 import { BaseNetwork, NetworkId, WalletAccount } from '../types/base';
 import { BASE_NETWORKS } from '../data/mockBaseData';
@@ -112,6 +113,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'contracts', label: 'Solidity & Deploy', icon: FileCode2 },
     { id: 'paymaster', label: 'Base Paymaster (Gasless)', icon: Flame },
     { id: 'guides', label: 'Base Docs & Guides', icon: BookOpen },
+    { id: 'config', label: 'App Config', icon: Settings },
   ];
 
   return (
@@ -204,6 +206,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Droplet className={`h-3.5 w-3.5 text-[#3c8aff] ${faucetClaiming ? 'animate-bounce' : ''}`} />
               <span>{faucetClaiming ? 'Claiming…' : 'Faucet'}</span>
+            </button>
+
+            {/* Quick App Config Button */}
+            <button
+              onClick={() => setActiveTab('config')}
+              title="App Configuration & RPC Settings"
+              className={`p-1.5 rounded-lg border transition-colors ${
+                activeTab === 'config'
+                  ? 'bg-[#0052ff] text-white border-[#0052ff]'
+                  : 'bg-[#14161c] hover:bg-[#1b1e26] text-[#dee1e7] border-[#232730]'
+              }`}
+            >
+              <Settings className="h-4 w-4" />
             </button>
 
             {/* Network Selector Dropdown */}

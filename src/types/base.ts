@@ -93,3 +93,32 @@ export interface WalletAccount {
   balanceToken: number;
   networkId: NetworkId;
 }
+
+export interface AppConfig {
+  rpcUrls: {
+    'base-mainnet': string;
+    'base-sepolia': string;
+    'base-vibenet': string;
+    'custom'?: string;
+  };
+  customChainId: number;
+  customExplorerUrl: string;
+  contracts: {
+    b20Factory: string;
+    policyRegistry: string;
+    paymasterEndpoint: string;
+    basescanApiKey: string;
+  };
+  gasSettings: {
+    gasPreset: 'standard' | 'fast' | 'instant' | 'custom';
+    customGwei: number;
+    autoSponsorGas: boolean;
+    maxSponsorCapUsd: number;
+  };
+  uiSettings: {
+    currency: 'USD' | 'EUR' | 'ETH';
+    denseLogs: boolean;
+    autoPlaySimulations: boolean;
+    soundEffects: boolean;
+  };
+}

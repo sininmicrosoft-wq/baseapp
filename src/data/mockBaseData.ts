@@ -1,4 +1,4 @@
-import { BaseNetwork, AssetMetadata, CapTableHolder, FlowConfig } from '../types/base';
+import { BaseNetwork, AssetMetadata, CapTableHolder, FlowConfig, AppConfig } from '../types/base';
 
 export const BASE_NETWORKS: Record<string, BaseNetwork> = {
   'base-mainnet': {
@@ -637,3 +637,32 @@ contract BaseB20Asset {
     }
 }
 `;
+
+export const DEFAULT_APP_CONFIG: AppConfig = {
+  rpcUrls: {
+    'base-mainnet': 'https://mainnet.base.org',
+    'base-sepolia': 'https://sepolia.base.org',
+    'base-vibenet': 'https://api.vibes.base.org/api/vibenet/account/rpc',
+    'custom': 'http://127.0.0.1:8545',
+  },
+  customChainId: 31337,
+  customExplorerUrl: 'https://basescan.org',
+  contracts: {
+    b20Factory: '0xB200000000000000000000000000000000000001',
+    policyRegistry: '0x8453000000000000000000000000000000000002',
+    paymasterEndpoint: 'https://api.developer.coinbase.com/rpc/v1/base/paymaster',
+    basescanApiKey: '',
+  },
+  gasSettings: {
+    gasPreset: 'standard',
+    customGwei: 0.001,
+    autoSponsorGas: true,
+    maxSponsorCapUsd: 50.0,
+  },
+  uiSettings: {
+    currency: 'USD',
+    denseLogs: false,
+    autoPlaySimulations: false,
+    soundEffects: true,
+  },
+};
