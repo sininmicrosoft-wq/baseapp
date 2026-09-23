@@ -16,11 +16,13 @@ import {
   AlertTriangle,
   Play,
   RotateCcw,
-  Network
+  Network,
+  Workflow
 } from 'lucide-react';
+import { DerivationPipelineViewer } from './DerivationPipelineViewer';
 
 export const BaseProtocolOverview: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'architecture' | 'flows' | 'components' | 'participants'>('architecture');
+  const [activeTab, setActiveTab] = useState<'architecture' | 'derivation' | 'flows' | 'components' | 'participants'>('derivation');
   const [selectedFlow, setSelectedFlow] = useState<'deposit' | 'transaction' | 'withdrawal'>('deposit');
   const [flowStep, setFlowStep] = useState<number>(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(false);
@@ -231,6 +233,18 @@ export const BaseProtocolOverview: React.FC = () => {
           </button>
 
           <button
+            onClick={() => setActiveTab('derivation')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+              activeTab === 'derivation'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'bg-[#14161c] text-[#8a91a0] hover:text-white'
+            }`}
+          >
+            <Workflow className="h-3.5 w-3.5" />
+            <span>Derivation Pipeline (8 Stages)</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('flows')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
               activeTab === 'flows'
@@ -417,7 +431,10 @@ export const BaseProtocolOverview: React.FC = () => {
         </div>
       )}
 
-      {/* VIEW 2: INTERACTIVE USER FLOW VISUALIZER */}
+      {/* VIEW 2: L2 CHAIN DERIVATION PIPELINE */}
+      {activeTab === 'derivation' && <DerivationPipelineViewer />}
+
+      {/* VIEW 3: INTERACTIVE USER FLOW VISUALIZER */}
       {activeTab === 'flows' && (
         <div className="space-y-6 animate-fadeIn">
           {/* Flow Picker */}
