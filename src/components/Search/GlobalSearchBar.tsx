@@ -296,6 +296,44 @@ export const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({
         setIsOpen(false);
       },
     },
+    {
+      id: 'guide-rpc-output',
+      title: 'RPC: optimism_outputAtBlock (L2 Output Roots)',
+      subtitle: 'Rollup node API returning version, outputRoot, withdrawalStorageRoot, and stateRoot',
+      category: 'guides',
+      badge: 'Rollup RPC',
+      badgeColor: 'bg-[#3c8aff]/15 text-[#3c8aff]',
+      action: () => {
+        onSelectTab('guides');
+        setIsOpen(false);
+      },
+      copyText: 'optimism_outputAtBlock',
+    },
+    {
+      id: 'guide-rpc-structures',
+      title: 'RPC Structures: L2BlockRef, BlockID & SyncStatus',
+      subtitle: 'Engine API types, sequenceNumber, l1origin, and driver synchronization status snapshot',
+      category: 'guides',
+      badge: 'Rollup Types',
+      badgeColor: 'bg-[#ffd12f]/15 text-[#ffd12f]',
+      action: () => {
+        onSelectTab('guides');
+        setIsOpen(false);
+      },
+    },
+    {
+      id: 'guide-withdrawal-root',
+      title: 'Spec: L2ToL1MessagePasser & Withdrawal Storage Root',
+      subtitle: 'Storage root of 0x4200...0016 for proving L2 withdrawal inclusion on Ethereum L1',
+      category: 'guides',
+      badge: 'Fault Proofs',
+      badgeColor: 'bg-[#66c800]/15 text-[#66c800]',
+      action: () => {
+        onSelectTab('guides');
+        setIsOpen(false);
+      },
+      copyText: '0x4200000000000000000000000000000000000016',
+    },
   ];
 
   // Combined and filtered items

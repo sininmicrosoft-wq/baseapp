@@ -18,10 +18,12 @@ import {
   RotateCcw,
   Network,
   Workflow,
-  Radio
+  Radio,
+  Terminal
 } from 'lucide-react';
 import { DerivationPipelineViewer } from './DerivationPipelineViewer';
 import { BaseP2PNetworkSpec } from './BaseP2PNetworkSpec';
+import { BaseRollupNodeRPCSpec } from './BaseRollupNodeRPCSpec';
 import { BaseNetwork } from '../../types/base';
 import { BASE_NETWORKS } from '../../data/mockBaseData';
 
@@ -30,7 +32,7 @@ interface BaseProtocolOverviewProps {
 }
 
 export const BaseProtocolOverview: React.FC<BaseProtocolOverviewProps> = ({ currentNetwork }) => {
-  const [activeTab, setActiveTab] = useState<'architecture' | 'derivation' | 'p2p' | 'flows' | 'components' | 'participants'>('derivation');
+  const [activeTab, setActiveTab] = useState<'architecture' | 'derivation' | 'p2p' | 'rpc' | 'flows' | 'components' | 'participants'>('derivation');
   const [selectedFlow, setSelectedFlow] = useState<'deposit' | 'transaction' | 'withdrawal'>('deposit');
   const [flowStep, setFlowStep] = useState<number>(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(false);
@@ -265,6 +267,18 @@ export const BaseProtocolOverview: React.FC<BaseProtocolOverviewProps> = ({ curr
           </button>
 
           <button
+            onClick={() => setActiveTab('rpc')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+              activeTab === 'rpc'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'bg-[#14161c] text-[#8a91a0] hover:text-white'
+            }`}
+          >
+            <Terminal className="h-3.5 w-3.5" />
+            <span>Rollup Node RPC</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('flows')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
               activeTab === 'flows'
@@ -457,6 +471,11 @@ export const BaseProtocolOverview: React.FC<BaseProtocolOverviewProps> = ({ curr
       {/* VIEW: P2P NETWORK & GOSSIP SPECIFICATION */}
       {activeTab === 'p2p' && (
         <BaseP2PNetworkSpec currentNetwork={currentNetwork || BASE_NETWORKS['base-vibenet']} />
+      )}
+
+      {/* VIEW: ROLLUP NODE RPC & OUTPUT ROOTS */}
+      {activeTab === 'rpc' && (
+        <BaseRollupNodeRPCSpec currentNetwork={currentNetwork || BASE_NETWORKS['base-vibenet']} />
       )}
 
       {/* VIEW 3: INTERACTIVE USER FLOW VISUALIZER */}
