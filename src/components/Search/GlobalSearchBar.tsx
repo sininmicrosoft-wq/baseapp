@@ -260,6 +260,42 @@ export const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({
         setIsOpen(false);
       },
     },
+    {
+      id: 'guide-p2p',
+      title: 'Guide: P2P Network, Discovery & Gossip',
+      subtitle: 'Discv5 DHT, LibP2P Noise XX handshake, GossipSub 1.1 unsafe block propagation',
+      category: 'guides',
+      badge: 'P2P Spec',
+      badgeColor: 'bg-[#3c8aff]/15 text-[#3c8aff]',
+      action: () => {
+        onSelectTab('guides');
+        setIsOpen(false);
+      },
+    },
+    {
+      id: 'guide-p2p-topics',
+      title: 'Guide: GossipSub Block Topics (blocksv1 - blocksv4)',
+      subtitle: '/optimism/chainId/version/blocks, Snappy block compression, SSZ ExecutionPayload',
+      category: 'guides',
+      badge: 'Gossip Topics',
+      badgeColor: 'bg-[#ffd12f]/15 text-[#ffd12f]',
+      action: () => {
+        onSelectTab('guides');
+        setIsOpen(false);
+      },
+    },
+    {
+      id: 'guide-p2p-reqresp',
+      title: 'Guide: P2P Req-Resp Sync (payload_by_number)',
+      subtitle: '/opstack/req/payload_by_number, little-endian block queries, version envelopes',
+      category: 'guides',
+      badge: 'Req-Resp',
+      badgeColor: 'bg-[#66c800]/15 text-[#66c800]',
+      action: () => {
+        onSelectTab('guides');
+        setIsOpen(false);
+      },
+    },
   ];
 
   // Combined and filtered items

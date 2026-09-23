@@ -17,12 +17,20 @@ import {
   Play,
   RotateCcw,
   Network,
-  Workflow
+  Workflow,
+  Radio
 } from 'lucide-react';
 import { DerivationPipelineViewer } from './DerivationPipelineViewer';
+import { BaseP2PNetworkSpec } from './BaseP2PNetworkSpec';
+import { BaseNetwork } from '../../types/base';
+import { BASE_NETWORKS } from '../../data/mockBaseData';
 
-export const BaseProtocolOverview: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'architecture' | 'derivation' | 'flows' | 'components' | 'participants'>('derivation');
+interface BaseProtocolOverviewProps {
+  currentNetwork?: BaseNetwork;
+}
+
+export const BaseProtocolOverview: React.FC<BaseProtocolOverviewProps> = ({ currentNetwork }) => {
+  const [activeTab, setActiveTab] = useState<'architecture' | 'derivation' | 'p2p' | 'flows' | 'components' | 'participants'>('derivation');
   const [selectedFlow, setSelectedFlow] = useState<'deposit' | 'transaction' | 'withdrawal'>('deposit');
   const [flowStep, setFlowStep] = useState<number>(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(false);
@@ -245,6 +253,18 @@ export const BaseProtocolOverview: React.FC = () => {
           </button>
 
           <button
+            onClick={() => setActiveTab('p2p')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+              activeTab === 'p2p'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'bg-[#14161c] text-[#8a91a0] hover:text-white'
+            }`}
+          >
+            <Radio className="h-3.5 w-3.5" />
+            <span>P2P Network & Gossip</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('flows')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
               activeTab === 'flows'
@@ -433,6 +453,11 @@ export const BaseProtocolOverview: React.FC = () => {
 
       {/* VIEW 2: L2 CHAIN DERIVATION PIPELINE */}
       {activeTab === 'derivation' && <DerivationPipelineViewer />}
+
+      {/* VIEW: P2P NETWORK & GOSSIP SPECIFICATION */}
+      {activeTab === 'p2p' && (
+        <BaseP2PNetworkSpec currentNetwork={currentNetwork || BASE_NETWORKS['base-vibenet']} />
+      )}
 
       {/* VIEW 3: INTERACTIVE USER FLOW VISUALIZER */}
       {activeTab === 'flows' && (

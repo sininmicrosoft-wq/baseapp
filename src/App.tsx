@@ -272,6 +272,7 @@ export default function App() {
         {activeTab === 'guides' && (
           <BaseDocsGuides
             onSelectSimulatorFlow={handleSelectSimulatorFlow}
+            currentNetwork={currentNetwork}
           />
         )}
 

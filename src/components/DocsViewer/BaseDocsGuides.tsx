@@ -16,15 +16,17 @@ import {
   Network,
   Layers
 } from 'lucide-react';
-import { ScenarioFlow } from '../../types/base';
+import { ScenarioFlow, BaseNetwork } from '../../types/base';
 import { BaseProtocolOverview } from './BaseProtocolOverview';
 
 interface BaseDocsGuidesProps {
   onSelectSimulatorFlow: (flowId: ScenarioFlow) => void;
+  currentNetwork?: BaseNetwork;
 }
 
 export const BaseDocsGuides: React.FC<BaseDocsGuidesProps> = ({
   onSelectSimulatorFlow,
+  currentNetwork,
 }) => {
   const [activeSection, setActiveSection] = useState<'protocol' | 'b20'>('protocol');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -158,7 +160,7 @@ await tokenContract.write.setTransfersPaused([true]);`,
       </div>
 
       {/* SECTION 1: PROTOCOL ARCHITECTURE */}
-      {activeSection === 'protocol' && <BaseProtocolOverview />}
+      {activeSection === 'protocol' && <BaseProtocolOverview currentNetwork={currentNetwork} />}
 
       {/* SECTION 2: B20 ASSET RECIPES */}
       {activeSection === 'b20' && (
