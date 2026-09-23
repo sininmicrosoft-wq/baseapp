@@ -1,0 +1,6 @@
+{
+  "name": "Base App - B20 Asset & RWA Studio",
+  "description": "Comprehensive developer hub and interactive B20 Asset tokenization studio for Base Layer 2. Issue RWAs, enforce allowlist policies, execute stock splits, and interact with Base Smart Wallets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
