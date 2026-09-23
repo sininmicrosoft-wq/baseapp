@@ -81,10 +81,11 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
             <Zap className="h-3.5 w-3.5 text-[#3c8aff]" />
           </div>
 
-          {/* Tooltip */}
-          <div className="absolute left-full ml-3 px-2.5 py-1 rounded-lg bg-[#181a22] border border-[#2b3140] text-xs font-semibold text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150 whitespace-nowrap z-50 flex items-center gap-1.5">
+          {/* Tooltip with 300ms hover delay */}
+          <div className="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-[#141720]/95 backdrop-blur-md border border-[#2b3140] text-xs font-semibold text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2.5 scale-95 transition-all duration-150 delay-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 group-hover:duration-200 group-hover:delay-300 whitespace-nowrap z-50 flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-[#0052ff]"></span>
             <span>Quick Actions Rail</span>
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-[5px] border-transparent border-r-[#2b3140]"></div>
           </div>
         </div>
 
@@ -111,13 +112,14 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
             </span>
           </button>
 
-          {/* Tooltip */}
-          <div className="absolute left-full ml-3 px-2.5 py-1.5 rounded-lg bg-[#181a22] border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150 whitespace-nowrap z-50">
+          {/* Tooltip with 300ms hover delay */}
+          <div className="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-[#141720]/95 backdrop-blur-md border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2.5 scale-95 transition-all duration-150 delay-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 group-hover:duration-200 group-hover:delay-300 whitespace-nowrap z-50">
             <div className="font-bold flex items-center gap-1.5">
               <span>Bridge Status</span>
-              <span className="text-[10px] px-1 py-0.2 rounded bg-[#66c800]/20 text-[#66c800] font-mono">Live</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#66c800]/20 text-[#66c800] font-mono font-bold">Live</span>
             </div>
-            <div className="text-[10px] text-[#8a91a0]">Ethereum L1 ↔ Base L2 Bridge</div>
+            <div className="text-[10px] text-[#8a91a0] mt-0.5">Ethereum L1 ↔ Base L2 Bridge</div>
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-[5px] border-transparent border-r-[#2b3140]"></div>
           </div>
         </div>
 
@@ -136,13 +138,14 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
             <ExternalLink className="h-4 w-4 text-[#ffd12f] group-hover:scale-110 transition-transform" />
           </button>
 
-          {/* Tooltip */}
-          <div className="absolute left-full ml-3 px-2.5 py-1.5 rounded-lg bg-[#181a22] border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150 whitespace-nowrap z-50">
+          {/* Tooltip with 300ms hover delay */}
+          <div className="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-[#141720]/95 backdrop-blur-md border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2.5 scale-95 transition-all duration-150 delay-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 group-hover:duration-200 group-hover:delay-300 whitespace-nowrap z-50">
             <div className="font-bold flex items-center gap-1.5">
               <span>View Explorer</span>
-              <span className="text-[10px] px-1 py-0.2 rounded bg-[#ffd12f]/20 text-[#ffd12f] font-mono">Basescan</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#ffd12f]/20 text-[#ffd12f] font-mono font-bold">Basescan</span>
             </div>
-            <div className="text-[10px] text-[#8a91a0]">Browse {currentNetwork.name}</div>
+            <div className="text-[10px] text-[#8a91a0] mt-0.5">Browse {currentNetwork.name}</div>
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-[5px] border-transparent border-r-[#2b3140]"></div>
           </div>
         </div>
 
@@ -169,13 +172,14 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
             )}
           </button>
 
-          {/* Tooltip */}
-          <div className="absolute left-full ml-3 px-2.5 py-1.5 rounded-lg bg-[#181a22] border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150 whitespace-nowrap z-50">
+          {/* Tooltip with 300ms hover delay */}
+          <div className="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-[#141720]/95 backdrop-blur-md border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2.5 scale-95 transition-all duration-150 delay-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 group-hover:duration-200 group-hover:delay-300 whitespace-nowrap z-50">
             <div className="font-bold flex items-center gap-1.5">
               <span>Request Faucet</span>
-              <span className="text-[10px] px-1 py-0.2 rounded bg-[#66c800]/20 text-[#66c800] font-mono">+0.5 ETH</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#66c800]/20 text-[#66c800] font-mono font-bold">+0.5 ETH</span>
             </div>
-            <div className="text-[10px] text-[#8a91a0]">Instant testnet gas drop</div>
+            <div className="text-[10px] text-[#8a91a0] mt-0.5">Instant testnet gas drop</div>
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-[5px] border-transparent border-r-[#2b3140]"></div>
           </div>
         </div>
 
@@ -200,10 +204,11 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
             }`} />
           </button>
 
-          {/* Tooltip */}
-          <div className="absolute left-full ml-3 px-2.5 py-1.5 rounded-lg bg-[#181a22] border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150 whitespace-nowrap z-50">
+          {/* Tooltip with 300ms hover delay */}
+          <div className="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-[#141720]/95 backdrop-blur-md border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2.5 scale-95 transition-all duration-150 delay-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 group-hover:duration-200 group-hover:delay-300 whitespace-nowrap z-50">
             <div className="font-bold">Settings & Configuration</div>
-            <div className="text-[10px] text-[#8a91a0]">RPCs, Contracts, Diagnostics & Specs</div>
+            <div className="text-[10px] text-[#8a91a0] mt-0.5">RPCs, Contracts, Diagnostics & Specs</div>
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-[5px] border-transparent border-r-[#2b3140]"></div>
           </div>
         </div>
 
@@ -230,10 +235,14 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
             }`} />
           </button>
 
-          {/* Tooltip */}
-          <div className="absolute left-full ml-3 px-2.5 py-1.5 rounded-lg bg-[#181a22] border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150 whitespace-nowrap z-50">
-            <div className="font-bold">Mini App Mode</div>
-            <div className="text-[10px] text-[#8a91a0]">Farcaster Frames v2 & Mobile View</div>
+          {/* Tooltip with 300ms hover delay */}
+          <div className="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-[#141720]/95 backdrop-blur-md border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2.5 scale-95 transition-all duration-150 delay-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 group-hover:duration-200 group-hover:delay-300 whitespace-nowrap z-50">
+            <div className="font-bold flex items-center gap-1.5">
+              <span>Mini App Mode</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#a855f7]/20 text-[#a855f7] font-mono font-bold">Frames v2</span>
+            </div>
+            <div className="text-[10px] text-[#8a91a0] mt-0.5">Farcaster Frames & Mobile View</div>
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-[5px] border-transparent border-r-[#2b3140]"></div>
           </div>
         </div>
 
