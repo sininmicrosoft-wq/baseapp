@@ -7,6 +7,7 @@ import { SolidityCodeViewer } from './components/ContractStudio/SolidityCodeView
 import { BasePaymasterDemo } from './components/Ecosystem/BasePaymasterDemo';
 import { BaseDocsGuides } from './components/DocsViewer/BaseDocsGuides';
 import { AppConfigManager } from './components/Config/AppConfigManager';
+import { BaseMiniAppView } from './components/MiniApp/BaseMiniAppView';
 import { TransactionLogDrawer } from './components/TransactionLogDrawer';
 import { 
   BASE_NETWORKS, 
@@ -24,9 +25,13 @@ import {
   AppConfig
 } from './types/base';
 import { generateTxHash, triggerConfetti } from './utils/web3Helper';
+import { detectMiniAppContext } from './utils/miniAppHelper';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<string>('simulator');
+  const miniAppContext = detectMiniAppContext();
+  const [activeTab, setActiveTab] = useState<string>(
+    miniAppContext.isInMiniApp ? 'miniapp' : 'miniapp'
+  );
   const [currentNetwork, setCurrentNetwork] = useState<BaseNetwork>(
     BASE_NETWORKS['base-vibenet']
   );
@@ -188,6 +193,20 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
+        {activeTab === 'miniapp' && (
+          <BaseMiniAppView
+            currentNetwork={currentNetwork}
+            asset={asset}
+            holders={holders}
+            wallet={wallet}
+            config={config}
+            onAddTxLog={handleAddTxLog}
+            onUpdateBalances={handleUpdateGlobalBalances}
+            onFaucetClaim={handleFaucetClaim}
+            isEmbeddedSimulator={true}
+          />
+        )}
+
         {activeTab === 'simulator' && (
           <B20FlowSimulator
             currentNetwork={currentNetwork}

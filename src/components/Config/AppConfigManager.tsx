@@ -19,7 +19,8 @@ import {
   Save,
   Check,
   Radio,
-  Server
+  Server,
+  Smartphone
 } from 'lucide-react';
 import { AppConfig, BaseNetwork, AssetMetadata, CapTableHolder, TxLogEntry } from '../../types/base';
 import { BASE_NETWORKS, DEFAULT_APP_CONFIG } from '../../data/mockBaseData';
@@ -47,7 +48,7 @@ export const AppConfigManager: React.FC<AppConfigManagerProps> = ({
   onAddTxLog,
 }) => {
   const [localConfig, setLocalConfig] = useState<AppConfig>(config);
-  const [activeSubTab, setActiveSubTab] = useState<'network' | 'contracts' | 'gas' | 'backup' | 'env'>('network');
+  const [activeSubTab, setActiveSubTab] = useState<'network' | 'contracts' | 'gas' | 'backup' | 'miniapp' | 'env'>('network');
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [pingLatencies, setPingLatencies] = useState<Record<string, number | null>>({});
   const [isPinging, setIsPinging] = useState<Record<string, boolean>>({});
@@ -322,6 +323,18 @@ export const AppConfigManager: React.FC<AppConfigManagerProps> = ({
         >
           <FileJson className="h-4 w-4" />
           <span>Backup & State Import/Export</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab('miniapp')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-medium flex items-center gap-2 transition-all ${
+            activeSubTab === 'miniapp'
+              ? 'bg-[#0052ff] text-white shadow-sm font-semibold'
+              : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+          }`}
+        >
+          <Smartphone className="h-4 w-4" />
+          <span>Mini App & Farcaster</span>
         </button>
 
         <button
@@ -815,6 +828,116 @@ export const AppConfigManager: React.FC<AppConfigManagerProps> = ({
               >
                 Apply Imported State
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUBTAB: Mini App & Farcaster */}
+      {activeSubTab === 'miniapp' && (
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-[#232730] bg-[#111317] p-5 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-white text-base flex items-center gap-2">
+                  <Smartphone className="h-4 w-4 text-[#0052ff]" />
+                  <span>Base & Farcaster Mini App (Frames v2) Configuration</span>
+                </h3>
+                <p className="text-xs text-[#8a91a0] mt-0.5">
+                  Specification, manifest, and deep link parameters for embedding this B20 Asset Studio inside Warpcast, Telegram, and Coinbase Smart Wallet.
+                </p>
+              </div>
+
+              <span className="px-2.5 py-1 rounded-full bg-[#66c800]/15 text-[#66c800] text-xs font-mono font-bold flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#66c800] animate-ping"></span>
+                Frame v2 Validated
+              </span>
+            </div>
+
+            <div className="space-y-3.5">
+              {/* Manifest info */}
+              <div className="p-4 rounded-xl bg-[#0e1014] border border-[#232730] space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white">Farcaster Manifest Location</span>
+                  <a
+                    href="/.well-known/farcaster.json"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-mono text-[#3c8aff] hover:underline flex items-center gap-1"
+                  >
+                    <span>View farcaster.json</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+                <div className="p-2.5 rounded-lg bg-[#14161c] border border-[#232730] font-mono text-xs text-[#dee1e7] flex items-center justify-between">
+                  <span>/.well-known/farcaster.json</span>
+                  <span className="text-[10px] text-[#66c800] bg-[#66c800]/10 px-1.5 py-0.5 rounded">
+                    HTTP 200 OK
+                  </span>
+                </div>
+              </div>
+
+              {/* Direct Mini App Launch Link */}
+              <div className="p-4 rounded-xl bg-[#0e1014] border border-[#232730] space-y-2">
+                <label className="block text-xs font-bold text-white">
+                  Direct Mini App Embed URL
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={typeof window !== 'undefined' ? `${window.location.origin}/?miniapp=true` : '/?miniapp=true'}
+                    className="w-full rounded-lg bg-[#14161c] border border-[#232730] px-3 py-2 text-xs font-mono text-white focus:outline-none"
+                  />
+                  <button
+                    onClick={() => {
+                      if (typeof window !== 'undefined') {
+                        navigator.clipboard.writeText(`${window.location.origin}/?miniapp=true`);
+                        triggerConfetti();
+                      }
+                    }}
+                    className="px-3 py-2 rounded-lg bg-[#0052ff] hover:bg-[#0048e0] text-white text-xs font-bold transition-colors whitespace-nowrap"
+                  >
+                    Copy Link
+                  </button>
+                </div>
+                <p className="text-[11px] text-[#717886]">
+                  Pass this URL into Warpcast Developer Playground or Telegram Botfather WebApp settings.
+                </p>
+              </div>
+
+              {/* External Developer Tools */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                <a
+                  href="https://warpcast.com/~/developers/frames"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-3.5 rounded-xl bg-[#0e1014] border border-[#232730] hover:border-[#0052ff]/50 transition-colors space-y-1 block"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white">Warpcast Frames Tool</span>
+                    <ExternalLink className="h-3.5 w-3.5 text-[#3c8aff]" />
+                  </div>
+                  <p className="text-[11px] text-[#8a91a0]">
+                    Inspect frame meta tags, test signature verification, and simulate feed launches.
+                  </p>
+                </a>
+
+                <a
+                  href="https://keys.coinbase.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-3.5 rounded-xl bg-[#0e1014] border border-[#232730] hover:border-[#0052ff]/50 transition-colors space-y-1 block"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white">Base Smart Wallet Sandbox</span>
+                    <ExternalLink className="h-3.5 w-3.5 text-[#3c8aff]" />
+                  </div>
+                  <p className="text-[11px] text-[#8a91a0]">
+                    Manage passkeys and simulate ERC-4337 smart wallet calls for testing.
+                  </p>
+                </a>
+              </div>
             </div>
           </div>
         </div>

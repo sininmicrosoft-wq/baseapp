@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjg0NTMsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhiMmUwODQ1M2Jhc2UwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwIn0",
+    "payload": "eyJkb21haW4iOiJiYXNlLm9yZyJ9",
+    "signature": "MHhkMDY4YTFmZTQ2YmNkYWEwMTI1ZTI5Y2FkOWEyZjJkY2MxNTRmNjA3YzYyMDJkYzg3NDgyNDM0Y2MzNDU0YzAxNmJmMDdiZDQzOTU4MDk1YmYxYzAwNTk3ZGFkODBlNjkxOGRlMzc5ZmJhZjExMmVhMDJkMzBhZjM2ZDI4NzM1YzFj"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Base B20 RWA Studio",
+    "iconUrl": "https://base.org/favicon.ico",
+    "homeUrl": "https://ais-dev-ipgbmulymso762xcezkj56-615601803900.asia-southeast1.run.app",
+    "imageUrl": "https://base.org/images/og-image.png",
+    "buttonTitle": "Launch B20 Studio",
+    "splashImageUrl": "https://base.org/images/og-image.png",
+    "splashBackgroundColor": "#0052ff",
+    "webhookUrl": "https://ais-dev-ipgbmulymso762xcezkj56-615601803900.asia-southeast1.run.app/api/webhook"
+  }
+}

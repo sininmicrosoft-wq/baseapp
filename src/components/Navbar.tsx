@@ -14,7 +14,8 @@ import {
   BookOpen,
   PlusCircle,
   Coins,
-  Settings
+  Settings,
+  Smartphone
 } from 'lucide-react';
 import { BaseNetwork, NetworkId, WalletAccount } from '../types/base';
 import { BASE_NETWORKS } from '../data/mockBaseData';
@@ -107,6 +108,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const navTabs = [
+    { id: 'miniapp', label: '📱 Mini App', icon: Smartphone },
     { id: 'simulator', label: 'B20 Asset Simulator', icon: Sparkles },
     { id: 'workshop', label: 'Custom RWA Workshop', icon: PlusCircle },
     { id: 'captable', label: 'Cap Table & Policies', icon: Users2 },
@@ -206,6 +208,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Droplet className={`h-3.5 w-3.5 text-[#3c8aff] ${faucetClaiming ? 'animate-bounce' : ''}`} />
               <span>{faucetClaiming ? 'Claiming…' : 'Faucet'}</span>
+            </button>
+
+            {/* Mini App Mode Button */}
+            <button
+              onClick={() => setActiveTab('miniapp')}
+              title="Switch to Mini App Mode / Frame View"
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+                activeTab === 'miniapp'
+                  ? 'bg-gradient-to-r from-[#0052ff] to-[#3c8aff] text-white border-transparent shadow-md shadow-[#0052ff]/30'
+                  : 'bg-[#14161c] hover:bg-[#1b1e26] text-[#dee1e7] border-[#232730]'
+              }`}
+            >
+              <Smartphone className="h-3.5 w-3.5 text-[#0052ff] group-hover:text-white" />
+              <span className="hidden md:inline">Mini App</span>
             </button>
 
             {/* Quick App Config Button */}
