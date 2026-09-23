@@ -9,6 +9,8 @@ import { BaseDocsGuides } from './components/DocsViewer/BaseDocsGuides';
 import { AppConfigManager } from './components/Config/AppConfigManager';
 import { BaseMiniAppView } from './components/MiniApp/BaseMiniAppView';
 import { TransactionLogDrawer } from './components/TransactionLogDrawer';
+import { QuickActionsMenu } from './components/QuickActions/QuickActionsMenu';
+import { BridgeStatusModal } from './components/QuickActions/BridgeStatusModal';
 import { 
   BASE_NETWORKS, 
   INITIAL_ASSET, 
@@ -37,6 +39,7 @@ export default function App() {
   );
   const [asset, setAsset] = useState<AssetMetadata>(INITIAL_ASSET);
   const [holders, setHolders] = useState<CapTableHolder[]>(INITIAL_HOLDERS);
+  const [isBridgeModalOpen, setIsBridgeModalOpen] = useState<boolean>(false);
 
   // Application & Network Configuration
   const [config, setConfig] = useState<AppConfig>(() => {
@@ -277,6 +280,24 @@ export default function App() {
         logs={logs}
         onClearLogs={handleClearLogs}
         currentNetwork={currentNetwork}
+      />
+
+      {/* Floating Quick Actions Menu / Command Shortcuts */}
+      <QuickActionsMenu
+        currentNetwork={currentNetwork}
+        wallet={wallet}
+        onOpenBridgeStatus={() => setIsBridgeModalOpen(true)}
+        onRequestFaucet={handleFaucetClaim}
+        onSelectTab={(tabId) => setActiveTab(tabId)}
+        contractAddress={asset.tokenAddress}
+      />
+
+      {/* Bridge Health & Status Modal */}
+      <BridgeStatusModal
+        isOpen={isBridgeModalOpen}
+        onClose={() => setIsBridgeModalOpen(false)}
+        currentNetwork={currentNetwork}
+        onAddTxLog={handleAddTxLog}
       />
     </div>
   );
