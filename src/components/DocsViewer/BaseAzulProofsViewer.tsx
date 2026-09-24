@@ -33,9 +33,13 @@ import { shortenAddress, triggerConfetti } from '../../utils/web3Helper';
 
 interface BaseAzulProofsViewerProps {
   currentNetwork?: BaseNetwork;
+  onNavigateToChallenger?: () => void;
 }
 
-export const BaseAzulProofsViewer: React.FC<BaseAzulProofsViewerProps> = ({ currentNetwork }) => {
+export const BaseAzulProofsViewer: React.FC<BaseAzulProofsViewerProps> = ({ 
+  currentNetwork,
+  onNavigateToChallenger
+}) => {
   const [activeTab, setActiveTab] = useState<'architecture' | 'components' | 'simulator' | 'contracts' | 'security'>('architecture');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
@@ -276,19 +280,30 @@ export const BaseAzulProofsViewer: React.FC<BaseAzulProofsViewerProps> = ({ curr
               </div>
 
               {/* 2. Challenger */}
-              <div className="p-4 rounded-xl bg-[#101420] border border-[#1e2538] space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-[#fc401f]/20 text-[#fc401f]">
-                    <AlertTriangle className="h-4 w-4" />
+              <div className="p-4 rounded-xl bg-[#101420] border border-[#1e2538] flex flex-col justify-between space-y-2">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-[#fc401f]/20 text-[#fc401f]">
+                      <AlertTriangle className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white">2. Challenger</h4>
+                      <span className="text-[10px] font-mono text-[#8a91a0]">Disputes Bad Claims</span>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-white">2. Challenger</h4>
-                    <span className="text-[10px] font-mono text-[#8a91a0]">Disputes Bad Claims</span>
-                  </div>
+                  <p className="text-[11px] text-[#8a91a0] leading-relaxed">
+                    Watches in-progress games onchain and compares them against locally recomputed canonical L2 state. If a proposal diverges, the challenger automatically disputes the game and stakes a counter-bond.
+                  </p>
                 </div>
-                <p className="text-[11px] text-[#8a91a0] leading-relaxed">
-                  Watches in-progress games onchain and compares them against locally recomputed canonical L2 state. If a proposal diverges, the challenger automatically disputes the game and stakes a counter-bond.
-                </p>
+                {onNavigateToChallenger && (
+                  <button
+                    onClick={onNavigateToChallenger}
+                    className="w-full mt-2 py-1.5 px-2.5 rounded-lg bg-[#fc401f]/15 hover:bg-[#fc401f]/25 text-[#fc401f] text-[11px] font-bold border border-[#fc401f]/30 flex items-center justify-center gap-1 transition-colors"
+                  >
+                    <span>Explore Challenger Spec</span>
+                    <ChevronRight className="h-3 w-3" />
+                  </button>
+                )}
               </div>
 
               {/* 3. Registrar */}

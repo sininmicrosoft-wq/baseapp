@@ -23,7 +23,8 @@ import {
   ArrowUpCircle,
   MessageSquareCode,
   Boxes,
-  ShieldCheck
+  ShieldCheck,
+  AlertTriangle
 } from 'lucide-react';
 import { ScenarioFlow, BaseNetwork } from '../../types/base';
 import { BaseProtocolOverview } from './BaseProtocolOverview';
@@ -36,6 +37,7 @@ import { BaseWithdrawalsViewer } from './BaseWithdrawalsViewer';
 import { BaseCrossDomainMessengersViewer } from './BaseCrossDomainMessengersViewer';
 import { BaseBatcherSpecViewer } from './BaseBatcherSpecViewer';
 import { BaseAzulProofsViewer } from './BaseAzulProofsViewer';
+import { BaseChallengerSpecViewer } from './BaseChallengerSpecViewer';
 
 interface BaseDocsGuidesProps {
   onSelectSimulatorFlow: (flowId: ScenarioFlow) => void;
@@ -46,7 +48,7 @@ export const BaseDocsGuides: React.FC<BaseDocsGuidesProps> = ({
   onSelectSimulatorFlow,
   currentNetwork,
 }) => {
-  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'deposits' | 'withdrawals' | 'messengers' | 'batcher' | 'proofs' | 'defi' | 'b20'>('protocol');
+  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'deposits' | 'withdrawals' | 'messengers' | 'batcher' | 'proofs' | 'challenger' | 'defi' | 'b20'>('protocol');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const guides = [
@@ -250,6 +252,18 @@ await tokenContract.write.setTransfersPaused([true]);`,
           </button>
 
           <button
+            onClick={() => setActiveSection('challenger')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'challenger'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <AlertTriangle className="h-4 w-4" />
+            <span>Challenger (Disputes)</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('defi')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
               activeSection === 'defi'
@@ -310,9 +324,22 @@ await tokenContract.write.setTransfersPaused([true]);`,
       {activeSection === 'batcher' && <BaseBatcherSpecViewer currentNetwork={currentNetwork} />}
 
       {/* SECTION 9: AZUL PROOF SYSTEM (TEE + ZK MULTI-PROVER) */}
-      {activeSection === 'proofs' && <BaseAzulProofsViewer currentNetwork={currentNetwork} />}
+      {activeSection === 'proofs' && (
+        <BaseAzulProofsViewer 
+          currentNetwork={currentNetwork} 
+          onNavigateToChallenger={() => setActiveSection('challenger')}
+        />
+      )}
 
-      {/* SECTION 10: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
+      {/* SECTION 10: CHALLENGER SPECIFICATION (OFFCHAIN DISPUTE WATCHDOG) */}
+      {activeSection === 'challenger' && (
+        <BaseChallengerSpecViewer 
+          currentNetwork={currentNetwork} 
+          onNavigateToProofs={() => setActiveSection('proofs')} 
+        />
+      )}
+
+      {/* SECTION 11: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
       {activeSection === 'defi' && <BaseDeFiIntegrationsViewer currentNetwork={currentNetwork} />}
 
       {/* SECTION 7: B20 ASSET RECIPES */}

@@ -32,7 +32,9 @@ import {
   ArrowDownCircle,
   ArrowUpCircle,
   MessageSquareCode,
-  Boxes
+  Boxes,
+  AlertTriangle,
+  DollarSign
 } from 'lucide-react';
 import { BaseNetwork, WalletAccount, AssetMetadata } from '../../types/base';
 import { BASE_NETWORKS } from '../../data/mockBaseData';
@@ -410,6 +412,22 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       },
     },
     {
+      id: 'tab-challenger',
+      title: 'Challenger Specification (Dispute Pipeline)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'AggregateVerifier games, output root recomputation, nullify/challenge, and DelayedWETH',
+      icon: AlertTriangle,
+      iconColor: 'text-[#fc401f]',
+      iconBg: 'bg-[#fc401f]/15 border border-[#fc401f]/30',
+      badge: 'Challenger',
+      badgeColor: 'bg-[#fc401f]/20 text-[#fc401f]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
       id: 'tab-config',
       title: 'Settings & App Configuration',
       category: 'tabs' as const,
@@ -703,6 +721,40 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
       action: () => {
         navigator.clipboard.writeText('0x43edB88C4B80fDD2AdFF2412A7BebF9dF42cB40e');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-anchor-registry',
+      title: 'Copy AnchorStateRegistry Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'AnchorStateRegistry 0x12d6a7B20235C1F033504838612140b2A676E46a tracking canonical game anchors',
+      icon: Copy,
+      iconColor: 'text-[#fc401f]',
+      iconBg: 'bg-[#fc401f]/15 border border-[#fc401f]/30',
+      badge: '0x12d6...E46a',
+      badgeColor: 'bg-[#fc401f]/20 text-[#fc401f]',
+      action: () => {
+        navigator.clipboard.writeText('0x12d6a7B20235C1F033504838612140b2A676E46a');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-delayed-weth',
+      title: 'Copy DelayedWETH Address (Bonds)',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'DelayedWETH 0x5C246d5E4929D37e8c3F17b20464f1696F158F89 for Challenger bond escrows & claims',
+      icon: DollarSign,
+      iconColor: 'text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: '0x5C24...8F89',
+      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      action: () => {
+        navigator.clipboard.writeText('0x5C246d5E4929D37e8c3F17b20464f1696F158F89');
         triggerConfetti();
         handleToggleOpen(false);
       },
