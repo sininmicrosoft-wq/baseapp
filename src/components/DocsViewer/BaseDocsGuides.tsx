@@ -19,7 +19,8 @@ import {
   Package,
   ArrowLeftRight,
   ArrowDownUp,
-  ArrowDownCircle
+  ArrowDownCircle,
+  ArrowUpCircle
 } from 'lucide-react';
 import { ScenarioFlow, BaseNetwork } from '../../types/base';
 import { BaseProtocolOverview } from './BaseProtocolOverview';
@@ -28,6 +29,7 @@ import { BasePreinstallsViewer } from './BasePreinstallsViewer';
 import { BaseDeFiIntegrationsViewer } from './BaseDeFiIntegrationsViewer';
 import { BaseStandardBridgesViewer } from './BaseStandardBridgesViewer';
 import { BaseDepositsViewer } from './BaseDepositsViewer';
+import { BaseWithdrawalsViewer } from './BaseWithdrawalsViewer';
 
 interface BaseDocsGuidesProps {
   onSelectSimulatorFlow: (flowId: ScenarioFlow) => void;
@@ -38,7 +40,7 @@ export const BaseDocsGuides: React.FC<BaseDocsGuidesProps> = ({
   onSelectSimulatorFlow,
   currentNetwork,
 }) => {
-  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'deposits' | 'defi' | 'b20'>('protocol');
+  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'deposits' | 'withdrawals' | 'defi' | 'b20'>('protocol');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const guides = [
@@ -194,6 +196,18 @@ await tokenContract.write.setTransfersPaused([true]);`,
           </button>
 
           <button
+            onClick={() => setActiveSection('withdrawals')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'withdrawals'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <ArrowUpCircle className="h-4 w-4" />
+            <span>Withdrawals (3-Step Flow)</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('defi')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
               activeSection === 'defi'
@@ -244,7 +258,10 @@ await tokenContract.write.setTransfersPaused([true]);`,
       {/* SECTION 5: DEPOSITED TRANSACTIONS (EIP-2718 TYPE 0x7E) */}
       {activeSection === 'deposits' && <BaseDepositsViewer currentNetwork={currentNetwork} />}
 
-      {/* SECTION 6: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
+      {/* SECTION 6: WITHDRAWALS & FAULT PROOFS (3-STEP FLOW) */}
+      {activeSection === 'withdrawals' && <BaseWithdrawalsViewer currentNetwork={currentNetwork} />}
+
+      {/* SECTION 7: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
       {activeSection === 'defi' && <BaseDeFiIntegrationsViewer currentNetwork={currentNetwork} />}
 
       {/* SECTION 7: B20 ASSET RECIPES */}

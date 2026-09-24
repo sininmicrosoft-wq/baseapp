@@ -29,7 +29,8 @@ import {
   ArrowLeftRight,
   TrendingUp,
   Vault,
-  ArrowDownCircle
+  ArrowDownCircle,
+  ArrowUpCircle
 } from 'lucide-react';
 import { BaseNetwork, WalletAccount, AssetMetadata } from '../../types/base';
 import { BASE_NETWORKS } from '../../data/mockBaseData';
@@ -343,6 +344,22 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       },
     },
     {
+      id: 'tab-withdrawals',
+      title: 'Withdrawals & Fault Proofs (3-Step Flow)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'L2ToL1MessagePasser, OptimismPortal, 7-day challenge window, and dispute games',
+      icon: ArrowUpCircle,
+      iconColor: 'text-[#fc401f]',
+      iconBg: 'bg-[#fc401f]/15 border border-[#fc401f]/30',
+      badge: '3-Step Flow',
+      badgeColor: 'bg-[#fc401f]/20 text-[#fc401f]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
       id: 'tab-config',
       title: 'Settings & App Configuration',
       category: 'tabs' as const,
@@ -568,6 +585,23 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
       action: () => {
         navigator.clipboard.writeText('0x4200000000000000000000000000000000000010');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-l2tol1messagepasser',
+      title: 'Copy L2ToL1MessagePasser Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Withdrawal initiator predeploy 0x4200000000000000000000000000000000000016',
+      icon: Copy,
+      iconColor: 'text-[#fc401f]',
+      iconBg: 'bg-[#fc401f]/15 border border-[#fc401f]/30',
+      badge: '0x4200...16',
+      badgeColor: 'bg-[#fc401f]/20 text-[#fc401f]',
+      action: () => {
+        navigator.clipboard.writeText('0x4200000000000000000000000000000000000016');
         triggerConfetti();
         handleToggleOpen(false);
       },
