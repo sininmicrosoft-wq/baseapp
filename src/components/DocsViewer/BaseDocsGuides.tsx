@@ -24,7 +24,8 @@ import {
   MessageSquareCode,
   Boxes,
   ShieldCheck,
-  AlertTriangle
+  AlertTriangle,
+  Zap
 } from 'lucide-react';
 import { ScenarioFlow, BaseNetwork } from '../../types/base';
 import { BaseProtocolOverview } from './BaseProtocolOverview';
@@ -38,6 +39,7 @@ import { BaseCrossDomainMessengersViewer } from './BaseCrossDomainMessengersView
 import { BaseBatcherSpecViewer } from './BaseBatcherSpecViewer';
 import { BaseAzulProofsViewer } from './BaseAzulProofsViewer';
 import { BaseChallengerSpecViewer } from './BaseChallengerSpecViewer';
+import { BaseProposerSpecViewer } from './BaseProposerSpecViewer';
 
 interface BaseDocsGuidesProps {
   onSelectSimulatorFlow: (flowId: ScenarioFlow) => void;
@@ -48,7 +50,7 @@ export const BaseDocsGuides: React.FC<BaseDocsGuidesProps> = ({
   onSelectSimulatorFlow,
   currentNetwork,
 }) => {
-  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'deposits' | 'withdrawals' | 'messengers' | 'batcher' | 'proofs' | 'challenger' | 'defi' | 'b20'>('protocol');
+  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'deposits' | 'withdrawals' | 'messengers' | 'batcher' | 'proofs' | 'challenger' | 'proposer' | 'defi' | 'b20'>('protocol');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const guides = [
@@ -264,6 +266,18 @@ await tokenContract.write.setTransfersPaused([true]);`,
           </button>
 
           <button
+            onClick={() => setActiveSection('proposer')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'proposer'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <Zap className="h-4 w-4" />
+            <span>Proposer (Checkpoints)</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('defi')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
               activeSection === 'defi'
@@ -328,6 +342,7 @@ await tokenContract.write.setTransfersPaused([true]);`,
         <BaseAzulProofsViewer 
           currentNetwork={currentNetwork} 
           onNavigateToChallenger={() => setActiveSection('challenger')}
+          onNavigateToProposer={() => setActiveSection('proposer')}
         />
       )}
 
@@ -339,7 +354,16 @@ await tokenContract.write.setTransfersPaused([true]);`,
         />
       )}
 
-      {/* SECTION 11: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
+      {/* SECTION 11: PROPOSER SPECIFICATION (OFFCHAIN CHECKPOINT PIPELINE) */}
+      {activeSection === 'proposer' && (
+        <BaseProposerSpecViewer 
+          currentNetwork={currentNetwork} 
+          onNavigateToProofs={() => setActiveSection('proofs')} 
+          onNavigateToChallenger={() => setActiveSection('challenger')}
+        />
+      )}
+
+      {/* SECTION 12: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
       {activeSection === 'defi' && <BaseDeFiIntegrationsViewer currentNetwork={currentNetwork} />}
 
       {/* SECTION 7: B20 ASSET RECIPES */}

@@ -34,11 +34,13 @@ import { shortenAddress, triggerConfetti } from '../../utils/web3Helper';
 interface BaseAzulProofsViewerProps {
   currentNetwork?: BaseNetwork;
   onNavigateToChallenger?: () => void;
+  onNavigateToProposer?: () => void;
 }
 
 export const BaseAzulProofsViewer: React.FC<BaseAzulProofsViewerProps> = ({ 
   currentNetwork,
-  onNavigateToChallenger
+  onNavigateToChallenger,
+  onNavigateToProposer
 }) => {
   const [activeTab, setActiveTab] = useState<'architecture' | 'components' | 'simulator' | 'contracts' | 'security'>('architecture');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -264,19 +266,30 @@ export const BaseAzulProofsViewer: React.FC<BaseAzulProofsViewerProps> = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
               {/* 1. Proposer */}
-              <div className="p-4 rounded-xl bg-[#101420] border border-[#1e2538] space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-[#0052ff]/20 text-[#3c8aff]">
-                    <Zap className="h-4 w-4" />
+              <div className="p-4 rounded-xl bg-[#101420] border border-[#1e2538] flex flex-col justify-between space-y-2">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-[#0052ff]/20 text-[#3c8aff]">
+                      <Zap className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white">1. Proposer</h4>
+                      <span className="text-[10px] font-mono text-[#8a91a0]">Creates Checkpoints</span>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-white">1. Proposer</h4>
-                    <span className="text-[10px] font-mono text-[#8a91a0]">Creates Checkpoints</span>
-                  </div>
+                  <p className="text-[11px] text-[#8a91a0] leading-relaxed">
+                    Creates new checkpoint proposals on Ethereum. Computes the output root for a fixed block range (e.g. every 1,800 L2 blocks = 1 hour), deposits the required ETH bond, and attaches the prover certificate.
+                  </p>
                 </div>
-                <p className="text-[11px] text-[#8a91a0] leading-relaxed">
-                  Creates new checkpoint proposals on Ethereum. Computes the output root for a fixed block range (e.g. every 1,800 L2 blocks = 1 hour), deposits the required ETH bond, and attaches the prover certificate.
-                </p>
+                {onNavigateToProposer && (
+                  <button
+                    onClick={onNavigateToProposer}
+                    className="w-full mt-2 py-1.5 px-2.5 rounded-lg bg-[#0052ff]/15 hover:bg-[#0052ff]/25 text-[#3c8aff] text-[11px] font-bold border border-[#0052ff]/30 flex items-center justify-center gap-1 transition-colors"
+                  >
+                    <span>Explore Proposer Spec</span>
+                    <ChevronRight className="h-3 w-3" />
+                  </button>
+                )}
               </div>
 
               {/* 2. Challenger */}

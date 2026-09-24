@@ -428,6 +428,22 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       },
     },
     {
+      id: 'tab-proposer',
+      title: 'Proposer Specification (Checkpoint Pipeline)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'Deterministic parent recovery, AWS Nitro TEE journal, and DisputeGameFactory.createWithInitData',
+      icon: Zap,
+      iconColor: 'text-[#0052ff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: 'Proposer',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
       id: 'tab-config',
       title: 'Settings & App Configuration',
       category: 'tabs' as const,
