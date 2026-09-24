@@ -26,10 +26,107 @@ interface BaseRollupNodeRPCSpecProps {
 
 export const BaseRollupNodeRPCSpec: React.FC<BaseRollupNodeRPCSpecProps> = ({ currentNetwork }) => {
   const [activeTab, setActiveTab] = useState<'method' | 'structures' | 'playground' | 'formula' | 'disputes'>('method');
+  const [selectedReturnField, setSelectedReturnField] = useState<'version' | 'outputRoot' | 'blockRef' | 'withdrawalStorageRoot' | 'stateRoot' | 'syncStatus'>('outputRoot');
   const [blockNumInput, setBlockNumInput] = useState<string>('20584912');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [isCallingRpc, setIsCallingRpc] = useState<boolean>(false);
   const [rpcResponse, setRpcResponse] = useState<any | null>(null);
+
+  const returnFieldDetails = {
+    version: {
+      title: 'version',
+      type: 'DATA (32 Bytes)',
+      badge: 'Commitment Version',
+      badgeColor: 'bg-[#3c8aff]/15 text-[#3c8aff]',
+      sample: '0x0000000000000000000000000000000000000000000000000000000000000000',
+      description: 'The output root commitment scheme version number, beginning with version 0. It serves as a domain separator preventing cross-version collision if future upgrades introduce Verkle trees, ZK state roots, or alternative hashing schemes.',
+      keyPoints: [
+        '32-byte big-endian byte array',
+        'Standard value: bytes32(0) across Bedrock, Canyon, Delta, Ecotone, and Isthmus',
+        'Preimage Position: 1st argument of keccak256(version ++ stateRoot ++ withdrawalStorageRoot ++ blockHash)',
+      ],
+    },
+    outputRoot: {
+      title: 'outputRoot',
+      type: 'DATA (32 Bytes)',
+      badge: 'L1 Consensus Anchor',
+      badgeColor: 'bg-[#66c800]/15 text-[#66c800]',
+      sample: '0x789c0000000000002d4e6f8a0b1c3d5e7f9a1b3c5d7e9f1a3b5c7e9f1a3b5c7e',
+      description: 'The canonical 32-byte cryptographic root proposal for the specified L2 block height. The L2 Output Proposer submits this root to the DisputeGameFactory on Ethereum L1. Dispute games and challenger bisection traces verify against this root.',
+      keyPoints: [
+        'Committed to Ethereum L1 DisputeGameFactory contract',
+        'Subject to 7-day fault proof challenge window on mainnet',
+        'Computed as keccak256(version ++ stateRoot ++ withdrawalStorageRoot ++ blockHash)',
+      ],
+    },
+    blockRef: {
+      title: 'blockRef',
+      type: 'Object (L2BlockRef)',
+      badge: 'Execution Reference',
+      badgeColor: 'bg-[#3c8aff]/15 text-[#3c8aff]',
+      sample: JSON.stringify({
+        hash: '0x4b7e013a17e08c91a0b3f71c4290d6318e24fa10b9c3d4e5f6',
+        number: '0x13a17e0',
+        parentHash: '0x892a013a17df1e2d3c4b5a6978869504132b8e7f9a1c2d3',
+        timestamp: '0x66f12340',
+        l1origin: { hash: '0x1a8f...', number: '0x139d1b0' },
+        sequenceNumber: '0x2'
+      }, null, 2),
+      description: 'An extended execution payload reference connecting the Base block to its Ethereum L1 genesis origin. It tracks the exact L1 block number and sequence number distance within the sequencing epoch.',
+      keyPoints: [
+        'Contains L2 block hash, number, parentHash, and timestamp',
+        'l1origin (BlockID): Identifies the L1 block containing the epoch start batch',
+        'sequenceNumber: distance (in L2 blocks) to the first block of the current L1 epoch',
+      ],
+    },
+    withdrawalStorageRoot: {
+      title: 'withdrawalStorageRoot',
+      type: 'DATA (32 Bytes)',
+      badge: 'L2ToL1MessagePasser',
+      badgeColor: 'bg-[#ffd12f]/15 text-[#ffd12f]',
+      sample: '0x9812000000000000f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1',
+      description: 'The Merkle Patricia storage trie root of the L2ToL1MessagePasser predeploy contract (0x4200000000000000000000000000000000000016). When users initiate withdrawals on Base, message hashes are stored in this trie.',
+      keyPoints: [
+        'Predeploy address: 0x4200000000000000000000000000000000000016',
+        'Powers OptimismPortal.proveWithdrawalTransaction on Ethereum L1',
+        'Users submit an eth_getProof storage proof against this root to prove withdrawal inclusion',
+      ],
+    },
+    stateRoot: {
+      title: 'stateRoot',
+      type: 'DATA (32 Bytes)',
+      badge: 'World State Trie',
+      badgeColor: 'bg-[#3c8aff]/15 text-[#3c8aff]',
+      sample: '0x673a000000000000b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1',
+      description: 'The root hash of the global Ethereum world state trie after executing all transactions in the block. Encapsulates account nonces, ETH balances, smart contract bytecode, and storage tries (including B20 token balances and cap tables).',
+      keyPoints: [
+        'Calculated by Reth execution client on Base',
+        'Commits to all account balances, token states, and contract storage on L2',
+        'Used in state transition proofs and MIPS execution traces during fault dispute games',
+      ],
+    },
+    syncStatus: {
+      title: 'syncStatus',
+      type: 'Object (SyncStatus)',
+      badge: 'Driver Snapshot',
+      badgeColor: 'bg-[#ffd12f]/15 text-[#ffd12f]',
+      sample: JSON.stringify({
+        current_l1: { number: '0x139d1b0', hash: '0x1a8f...' },
+        head_l1: { number: '0x139d1b0' },
+        safe_l1: { number: '0x139d190' },
+        finalized_l1: { number: '0x139d170' },
+        unsafe_l2: { number: '0x13a17e0' },
+        safe_l2: { number: '0x13a17df' },
+        finalized_l2: { number: '0x13a1560' }
+      }, null, 2),
+      description: 'Instantaneous snapshot of the rollup driver state tracking L1 and L2 heads across unsafe, safe, and finalized stages. Provides critical observability into node sync progress, batcher lag, and P2P mesh health.',
+      keyPoints: [
+        'L1 Checkpoints: current_l1, current_l1_finalized, head_l1, safe_l1, finalized_l1',
+        'L2 Heads: unsafe_l2 (P2P gossip), safe_l2 (L1 batch derived), finalized_l2 (Casper finalized)',
+        'Crucial for detecting chain reorgs and sequencing pipeline bottlenecks',
+      ],
+    },
+  };
 
   const handleCopy = (key: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -294,10 +391,16 @@ export const BaseRollupNodeRPCSpec: React.FC<BaseRollupNodeRPCSpecProps> = ({ cu
               </div>
 
               {/* Return Values Table */}
-              <div className="space-y-2 pt-2">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider text-[#8a91a0]">
-                  Return Fields
-                </h4>
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider text-[#8a91a0]">
+                    Return Fields (Select to Inspect)
+                  </h4>
+                  <span className="text-[11px] text-[#3c8aff] font-mono">
+                    Click any field to view cryptographic role & schema
+                  </span>
+                </div>
+
                 <div className="rounded-xl border border-[#262b36] overflow-hidden text-xs">
                   <table className="w-full text-left font-mono">
                     <thead className="bg-[#141720] text-[#8a91a0] border-b border-[#262b36]">
@@ -305,54 +408,116 @@ export const BaseRollupNodeRPCSpec: React.FC<BaseRollupNodeRPCSpecProps> = ({ cu
                         <th className="p-3">Field</th>
                         <th className="p-3">Type</th>
                         <th className="p-3">Description</th>
+                        <th className="p-3 text-right">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#1f232c] bg-[#0d0f14] text-white">
-                      <tr>
-                        <td className="p-3 text-[#3c8aff]">version</td>
-                        <td className="p-3 text-[#ffd12f]">DATA (32 Bytes)</td>
-                        <td className="p-3 text-[#b1b7c3] font-sans">
-                          Output root version number, beginning with <code className="text-white font-mono">0x00...00</code>.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-3 text-[#66c800]">outputRoot</td>
-                        <td className="p-3 text-[#ffd12f]">DATA (32 Bytes)</td>
-                        <td className="p-3 text-[#b1b7c3] font-sans">
-                          The 32-byte cryptographic output root committed to L1 for fault proofs.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-3 text-[#3c8aff]">blockRef</td>
-                        <td className="p-3 text-[#ffd12f]">Object (L2BlockRef)</td>
-                        <td className="p-3 text-[#b1b7c3] font-sans">
-                          Contains hash, number, parentHash, timestamp, l1origin (BlockID), and sequenceNumber.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-3 text-[#ffd12f]">withdrawalStorageRoot</td>
-                        <td className="p-3 text-[#ffd12f]">DATA (32 Bytes)</td>
-                        <td className="p-3 text-[#b1b7c3] font-sans">
-                          Storage root of the <code className="text-white font-mono">L2ToL1MessagePasser</code> predeploy contract at block height.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-3 text-[#3c8aff]">stateRoot</td>
-                        <td className="p-3 text-[#ffd12f]">DATA (32 Bytes)</td>
-                        <td className="p-3 text-[#b1b7c3] font-sans">
-                          World state trie root of the Base execution layer at block height.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-3 text-[#b1b7c3]">syncStatus</td>
-                        <td className="p-3 text-[#ffd12f]">Object (SyncStatus)</td>
-                        <td className="p-3 text-[#b1b7c3] font-sans">
-                          Instantaneous driver sync status across current_l1, head_l1, safe_l1, unsafe_l2, safe_l2, finalized_l2.
-                        </td>
-                      </tr>
+                      {(['version', 'outputRoot', 'blockRef', 'withdrawalStorageRoot', 'stateRoot', 'syncStatus'] as const).map((fieldName) => {
+                        const fieldInfo = returnFieldDetails[fieldName];
+                        const isSelected = selectedReturnField === fieldName;
+                        return (
+                          <tr
+                            key={fieldName}
+                            onClick={() => setSelectedReturnField(fieldName)}
+                            className={`cursor-pointer transition-colors ${
+                              isSelected
+                                ? 'bg-[#0052ff]/15 border-l-2 border-l-[#0052ff]'
+                                : 'hover:bg-[#141722]'
+                            }`}
+                          >
+                            <td className="p-3">
+                              <span className={`font-bold ${
+                                fieldName === 'outputRoot'
+                                  ? 'text-[#66c800]'
+                                  : fieldName === 'withdrawalStorageRoot'
+                                  ? 'text-[#ffd12f]'
+                                  : 'text-[#3c8aff]'
+                              }`}>
+                                {fieldName}
+                              </span>
+                            </td>
+                            <td className="p-3 text-[#ffd12f]">{fieldInfo.type}</td>
+                            <td className="p-3 text-[#b1b7c3] font-sans truncate max-w-xs">
+                              {fieldInfo.description}
+                            </td>
+                            <td className="p-3 text-right">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+                                isSelected
+                                  ? 'bg-[#0052ff] text-white font-bold'
+                                  : 'bg-[#1e2330] text-[#8a91a0]'
+                              }`}>
+                                {isSelected ? 'Active' : 'Inspect'}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
+
+                {/* Return Field Deep-Dive Inspector Card */}
+                {selectedReturnField && (
+                  <div className="p-4 rounded-xl border border-[#0052ff]/40 bg-[#0c0e14] space-y-3 mt-4 animate-fadeIn shadow-lg shadow-[#0052ff]/5">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1f232c] pb-3">
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-sm font-mono font-bold text-white">
+                          Field: <span className="text-[#3c8aff]">{returnFieldDetails[selectedReturnField].title}</span>
+                        </span>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${returnFieldDetails[selectedReturnField].badgeColor}`}>
+                          {returnFieldDetails[selectedReturnField].badge}
+                        </span>
+                        <span className="text-xs font-mono text-[#8a91a0]">
+                          ({returnFieldDetails[selectedReturnField].type})
+                        </span>
+                      </div>
+
+                      <button
+                        onClick={() => handleCopy(`field-${selectedReturnField}`, returnFieldDetails[selectedReturnField].sample)}
+                        className="text-xs text-[#8a91a0] hover:text-white flex items-center gap-1 font-mono bg-[#141720] px-2.5 py-1 rounded-lg border border-[#232732]"
+                      >
+                        {copiedKey === `field-${selectedReturnField}` ? (
+                          <>
+                            <Check className="h-3 w-3 text-[#66c800]" />
+                            <span className="text-[#66c800]">Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3 w-3" />
+                            <span>Copy Sample</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-[#b1b7c3] leading-relaxed">
+                      {returnFieldDetails[selectedReturnField].description}
+                    </p>
+
+                    <div className="space-y-1.5 pt-1">
+                      <span className="text-[11px] font-mono font-bold text-[#8a91a0] uppercase tracking-wider">
+                        Key Architectural Specifications:
+                      </span>
+                      <ul className="space-y-1 text-xs text-[#b1b7c3]">
+                        {returnFieldDetails[selectedReturnField].keyPoints.map((pt, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <div className="h-1.5 w-1.5 rounded-full bg-[#0052ff] mt-1.5 shrink-0" />
+                            <span>{pt}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="space-y-1.5 pt-2">
+                      <span className="text-[11px] font-mono text-[#8a91a0]">
+                        Payload Representation:
+                      </span>
+                      <pre className="p-3 rounded-lg bg-[#11131a] border border-[#232732] font-mono text-[11px] text-[#3c8aff] overflow-x-auto leading-relaxed">
+                        {returnFieldDetails[selectedReturnField].sample}
+                      </pre>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

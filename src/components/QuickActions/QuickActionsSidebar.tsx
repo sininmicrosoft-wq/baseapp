@@ -8,25 +8,31 @@ import {
   Zap, 
   Check, 
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  Wallet,
+  KeyRound
 } from 'lucide-react';
-import { BaseNetwork } from '../../types/base';
-import { triggerConfetti } from '../../utils/web3Helper';
+import { BaseNetwork, WalletAccount } from '../../types/base';
+import { shortenAddress, triggerConfetti } from '../../utils/web3Helper';
 
 interface QuickActionsSidebarProps {
   currentNetwork: BaseNetwork;
   activeTab: string;
+  wallet?: WalletAccount;
   onOpenBridgeStatus: () => void;
   onRequestFaucet: () => void;
   onSelectTab: (tabId: string) => void;
+  onQuickConnect: () => void;
 }
 
 export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
   currentNetwork,
   activeTab,
+  wallet,
   onOpenBridgeStatus,
   onRequestFaucet,
   onSelectTab,
+  onQuickConnect,
 }) => {
   const [mounted, setMounted] = useState(false);
   const [faucetClaimed, setFaucetClaimed] = useState(false);
@@ -90,6 +96,64 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
         </div>
 
         <div className="w-6 h-px bg-[#232730]" />
+
+        {/* BUTTON: Quick Connect */}
+        <div 
+          className={`relative group transition-all duration-500 ${
+            mounted ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-4 scale-95'
+          }`}
+          style={{ transitionDelay: '110ms' }}
+        >
+          <button
+            onClick={onQuickConnect}
+            aria-label="Quick Connect Wallet"
+            className={`relative h-10 w-10 rounded-xl flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-[#0052ff]/50 active:scale-95 ${
+              wallet?.isConnected
+                ? 'bg-[#0052ff]/15 text-[#3c8aff] hover:bg-[#0052ff]/25 border border-[#0052ff]/30 shadow-md shadow-[#0052ff]/20'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#1a1d26] ring-1 ring-[#0052ff]/30'
+            }`}
+          >
+            {wallet?.isConnected ? (
+              <Wallet className="h-4 w-4 text-[#3c8aff] group-hover:scale-110 transition-transform" />
+            ) : (
+              <KeyRound className="h-4 w-4 text-[#3c8aff] group-hover:scale-110 transition-transform" />
+            )}
+            
+            {/* Status indicator dot */}
+            <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+              {wallet?.isConnected ? (
+                <>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#66c800] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#66c800]"></span>
+                </>
+              ) : (
+                <>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0052ff] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0052ff]"></span>
+                </>
+              )}
+            </span>
+          </button>
+
+          {/* Tooltip with 300ms hover delay */}
+          <div className="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-[#141720]/95 backdrop-blur-md border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2.5 scale-95 transition-all duration-150 delay-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 group-hover:duration-200 group-hover:delay-300 whitespace-nowrap z-50">
+            <div className="font-bold flex items-center gap-1.5">
+              <span>{wallet?.isConnected ? 'Wallet Connected' : 'Quick Connect'}</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-bold ${
+                wallet?.isConnected ? 'bg-[#66c800]/20 text-[#66c800]' : 'bg-[#0052ff]/20 text-[#3c8aff]'
+              }`}>
+                {wallet?.isConnected ? (wallet.isSmartWallet ? 'Passkey' : 'Injected') : '1-Click'}
+              </span>
+            </div>
+            <div className="text-[10px] text-[#8a91a0] mt-0.5">
+              {wallet?.isConnected 
+                ? `${shortenAddress(wallet.address)} · Click to switch / manage`
+                : 'Connect Base Smart Wallet or Browser Extension'
+              }
+            </div>
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-[5px] border-transparent border-r-[#2b3140]"></div>
+          </div>
+        </div>
 
         {/* BUTTON 1: Bridge Status */}
         <div 

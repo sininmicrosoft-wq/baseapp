@@ -16,7 +16,9 @@ import {
   Sparkles,
   Command,
   FileCode,
-  Network
+  Network,
+  Wallet,
+  KeyRound
 } from 'lucide-react';
 import { BaseNetwork, WalletAccount } from '../../types/base';
 import { triggerConfetti } from '../../utils/web3Helper';
@@ -27,6 +29,7 @@ interface QuickActionsMenuProps {
   onOpenBridgeStatus: () => void;
   onRequestFaucet: () => void;
   onSelectTab: (tabId: string) => void;
+  onQuickConnect?: () => void;
   contractAddress?: string;
 }
 
@@ -36,6 +39,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   onOpenBridgeStatus,
   onRequestFaucet,
   onSelectTab,
+  onQuickConnect,
   contractAddress = '0xB20019e07cA8F6A3E147eFbA9D987116e7a18453',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -89,6 +93,25 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
 
   // Quick Action Items Definition
   const actions = [
+    {
+      id: 'quick-connect',
+      title: wallet.isConnected ? 'Manage Connected Wallet' : 'Quick Connect Wallet',
+      category: 'Wallet & Access',
+      subtitle: wallet.isConnected
+        ? `Connected: ${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)} (${wallet.isSmartWallet ? 'Passkey' : 'Injected'})`
+        : 'Connect Base Smart Wallet with Passkeys or Browser Wallet',
+      icon: wallet.isConnected ? Wallet : KeyRound,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15',
+      badge: wallet.isConnected ? (wallet.isSmartWallet ? 'Passkey' : 'Injected') : '1-Click',
+      badgeColor: wallet.isConnected ? 'bg-[#66c800]/20 text-[#66c800]' : 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        setIsOpen(false);
+        if (onQuickConnect) {
+          onQuickConnect();
+        }
+      },
+    },
     {
       id: 'bridge',
       title: 'Check Bridge Status',

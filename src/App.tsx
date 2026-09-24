@@ -12,6 +12,7 @@ import { TransactionLogDrawer } from './components/TransactionLogDrawer';
 import { QuickActionsMenu } from './components/QuickActions/QuickActionsMenu';
 import { QuickActionsSidebar } from './components/QuickActions/QuickActionsSidebar';
 import { BridgeStatusModal } from './components/QuickActions/BridgeStatusModal';
+import { WalletConnectModal } from './components/Wallet/WalletConnectModal';
 import { 
   BASE_NETWORKS, 
   INITIAL_ASSET, 
@@ -41,6 +42,7 @@ export default function App() {
   const [asset, setAsset] = useState<AssetMetadata>(INITIAL_ASSET);
   const [holders, setHolders] = useState<CapTableHolder[]>(INITIAL_HOLDERS);
   const [isBridgeModalOpen, setIsBridgeModalOpen] = useState<boolean>(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
 
   // Application & Network Configuration
   const [config, setConfig] = useState<AppConfig>(() => {
@@ -197,12 +199,15 @@ export default function App() {
         holders={holders}
         logs={logs}
         onSelectSimulatorFlow={handleSelectSimulatorFlow}
+        onOpenConnectWallet={() => setIsWalletModalOpen(true)}
       />
 
       {/* Persistent Left Vertical Quick Actions Sidebar (Glassmorphism) */}
       <QuickActionsSidebar
         currentNetwork={currentNetwork}
         activeTab={activeTab}
+        wallet={wallet}
+        onQuickConnect={() => setIsWalletModalOpen(true)}
         onOpenBridgeStatus={() => setIsBridgeModalOpen(true)}
         onRequestFaucet={handleFaucetClaim}
         onSelectTab={(tabId) => setActiveTab(tabId)}
@@ -304,6 +309,7 @@ export default function App() {
         onOpenBridgeStatus={() => setIsBridgeModalOpen(true)}
         onRequestFaucet={handleFaucetClaim}
         onSelectTab={(tabId) => setActiveTab(tabId)}
+        onQuickConnect={() => setIsWalletModalOpen(true)}
         contractAddress={asset.tokenAddress}
       />
 
@@ -312,6 +318,16 @@ export default function App() {
         isOpen={isBridgeModalOpen}
         onClose={() => setIsBridgeModalOpen(false)}
         currentNetwork={currentNetwork}
+        onAddTxLog={handleAddTxLog}
+      />
+
+      {/* Wallet Connection Flow Modal (accessible directly via Quick Actions Rail without navigating to Settings) */}
+      <WalletConnectModal
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+        currentNetwork={currentNetwork}
+        wallet={wallet}
+        setWallet={setWallet}
         onAddTxLog={handleAddTxLog}
       />
     </div>

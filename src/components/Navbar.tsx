@@ -36,6 +36,7 @@ interface NavbarProps {
   holders?: CapTableHolder[];
   logs?: TxLogEntry[];
   onSelectSimulatorFlow?: (flowId: ScenarioFlow) => void;
+  onOpenConnectWallet?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -52,6 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   holders = [],
   logs = [],
   onSelectSimulatorFlow,
+  onOpenConnectWallet,
 }) => {
   const [showNetworkMenu, setShowNetworkMenu] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -379,7 +381,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             ) : (
               <button
-                onClick={() => setShowWalletModal(true)}
+                onClick={() => onOpenConnectWallet ? onOpenConnectWallet() : setShowWalletModal(true)}
                 className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#0052ff] hover:bg-[#0045d8] text-white text-xs font-semibold shadow-md shadow-[#0052ff]/20 transition-all active:scale-95"
               >
                 <KeyRound className="h-3.5 w-3.5" />
