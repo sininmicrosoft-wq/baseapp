@@ -25,7 +25,10 @@ import {
   Radio,
   BookOpen,
   Cpu,
-  Package
+  Package,
+  ArrowLeftRight,
+  TrendingUp,
+  Vault
 } from 'lucide-react';
 import { BaseNetwork, WalletAccount, AssetMetadata } from '../../types/base';
 import { BASE_NETWORKS } from '../../data/mockBaseData';
@@ -291,6 +294,22 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       },
     },
     {
+      id: 'tab-defi',
+      title: 'Integrate DeFi on Base (0x, Lending, Earn)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'Interactive simulations for swaps, lending markets, collateral borrowing, and ERC-4626 vaults',
+      icon: ArrowLeftRight,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: 'DeFi Demo',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
       id: 'tab-config',
       title: 'Settings & App Configuration',
       category: 'tabs' as const,
@@ -501,6 +520,54 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
         navigator.clipboard.writeText('0x000000000022D473030F116dDEE9F6B43aC78BA3');
         triggerConfetti();
         handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-defi-trade',
+      title: 'Simulate 0x Swap Route',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Request 0x quote (1,000 USDC -> 0.397 WETH) with AllowanceHolder approval',
+      icon: ArrowLeftRight,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: '0x Swap',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
+      id: 'action-defi-lend',
+      title: 'Simulate USDC Lending Supply',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Supply 1,000 USDC at 4.2% variable APY with 30-day interest accrual',
+      icon: TrendingUp,
+      iconColor: 'text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: 'Lend USDC',
+      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
+      id: 'action-defi-earn',
+      title: 'Simulate ERC-4626 Vault Deposit',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'One-click deposit into tokenized yield vault with share price appreciation',
+      icon: Vault,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: 'ERC-4626',
+      badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
       },
     },
     {

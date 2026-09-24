@@ -16,12 +16,14 @@ import {
   Network,
   Layers,
   Cpu,
-  Package
+  Package,
+  ArrowLeftRight
 } from 'lucide-react';
 import { ScenarioFlow, BaseNetwork } from '../../types/base';
 import { BaseProtocolOverview } from './BaseProtocolOverview';
 import { BasePredeploysViewer } from './BasePredeploysViewer';
 import { BasePreinstallsViewer } from './BasePreinstallsViewer';
+import { BaseDeFiIntegrationsViewer } from './BaseDeFiIntegrationsViewer';
 
 interface BaseDocsGuidesProps {
   onSelectSimulatorFlow: (flowId: ScenarioFlow) => void;
@@ -32,7 +34,7 @@ export const BaseDocsGuides: React.FC<BaseDocsGuidesProps> = ({
   onSelectSimulatorFlow,
   currentNetwork,
 }) => {
-  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'b20'>('protocol');
+  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'defi' | 'b20'>('protocol');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const guides = [
@@ -164,6 +166,18 @@ await tokenContract.write.setTransfersPaused([true]);`,
           </button>
 
           <button
+            onClick={() => setActiveSection('defi')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'defi'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <ArrowLeftRight className="h-4 w-4" />
+            <span>Integrate DeFi</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('b20')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
               activeSection === 'b20'
@@ -196,7 +210,10 @@ await tokenContract.write.setTransfersPaused([true]);`,
       {/* SECTION 3: BASE PREINSTALLED UTILITY CONTRACTS */}
       {activeSection === 'preinstalls' && <BasePreinstallsViewer currentNetwork={currentNetwork} />}
 
-      {/* SECTION 4: B20 ASSET RECIPES */}
+      {/* SECTION 4: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
+      {activeSection === 'defi' && <BaseDeFiIntegrationsViewer currentNetwork={currentNetwork} />}
+
+      {/* SECTION 5: B20 ASSET RECIPES */}
       {activeSection === 'b20' && (
         <div className="space-y-6 animate-fadeIn">
           {/* Header */}
