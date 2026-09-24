@@ -32,6 +32,7 @@ import {
 import { generateTxHash, triggerConfetti, formatNumber, shortenAddress } from '../../utils/web3Helper';
 import { notifyMiniAppReady, detectMiniAppContext } from '../../utils/miniAppHelper';
 import { RwaPriceVolumeChart } from './RwaPriceVolumeChart';
+import { GasPriceEstimator, GasTierId } from './GasPriceEstimator';
 
 interface BaseMiniAppViewProps {
   currentNetwork: BaseNetwork;
@@ -59,6 +60,7 @@ export const BaseMiniAppView: React.FC<BaseMiniAppViewProps> = ({
   const [activeTab, setActiveTab] = useState<'portfolio' | 'send' | 'compliance' | 'activity'>('portfolio');
   const [recipient, setRecipient] = useState<string>('0x70997970C51812dc3A010C7d01b50e0d17dc79C8'); // Bob
   const [transferAmount, setTransferAmount] = useState<number>(25);
+  const [selectedGasTier, setSelectedGasTier] = useState<GasTierId>('standard');
   const [isSending, setIsSending] = useState(false);
   const [transferSuccess, setTransferSuccess] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -108,7 +110,7 @@ export const BaseMiniAppView: React.FC<BaseMiniAppViewProps> = ({
         timeFormatted: new Date().toTimeString().split(' ')[0],
         level: 'EVENT',
         name: 'transfer (Gasless)',
-        detail: `MiniApp: Transferred ${transferAmount} ${asset.symbol} to ${shortenAddress(recipient)}. Gas covered by Base Paymaster.`,
+        detail: `MiniApp: Transferred ${transferAmount} ${asset.symbol} to ${shortenAddress(recipient)}. Gas fee (${selectedGasTier} tier) covered by Base Paymaster.`,
         kind: 'ok',
         hash: txHash,
         gasUsed: 38500,
@@ -174,6 +176,17 @@ export const BaseMiniAppView: React.FC<BaseMiniAppViewProps> = ({
         </div>
 
         <div className="flex items-center gap-1.5">
+          {/* Dynamic Live Gas Estimator Badge */}
+          <GasPriceEstimator
+            currentNetwork={currentNetwork}
+            compact={true}
+            selectedTier={selectedGasTier}
+            onSelectTier={(tier) => {
+              setSelectedGasTier(tier);
+              setActiveTab('send');
+            }}
+          />
+
           <button
             onClick={handleCopyMiniAppUrl}
             title="Share / Copy Mini App Link"
@@ -400,17 +413,24 @@ export const BaseMiniAppView: React.FC<BaseMiniAppViewProps> = ({
                 </div>
               </div>
 
+              {/* Dynamic Gas Price Estimator & Congestion Suggestion */}
+              <GasPriceEstimator
+                currentNetwork={currentNetwork}
+                selectedTier={selectedGasTier}
+                onSelectTier={(tier) => setSelectedGasTier(tier)}
+              />
+
               {/* Paymaster Sponsorship Card */}
               <div className="p-3 rounded-xl bg-[#66c800]/10 border border-[#66c800]/25 text-xs text-[#dee1e7] space-y-1">
                 <div className="flex items-center justify-between text-[#66c800] font-bold">
                   <div className="flex items-center gap-1.5">
                     <ShieldCheck className="h-4 w-4" />
-                    <span>Base Paymaster Sponsored</span>
+                    <span>Base Paymaster Sponsored ({selectedGasTier.toUpperCase()})</span>
                   </div>
                   <span className="font-mono">$0.00 Gas</span>
                 </div>
                 <p className="text-[10px] text-[#8a91a0]">
-                  UserOp signature generated via Passkey. Zero ETH deducted from your account.
+                  UserOp signature generated via Passkey. The Base Paymaster fully covers your selected {selectedGasTier} tier transaction fee. Zero ETH deducted from your account.
                 </p>
               </div>
 
