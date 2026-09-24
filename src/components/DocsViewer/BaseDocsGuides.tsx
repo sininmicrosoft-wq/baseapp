@@ -17,13 +17,15 @@ import {
   Layers,
   Cpu,
   Package,
-  ArrowLeftRight
+  ArrowLeftRight,
+  ArrowDownUp
 } from 'lucide-react';
 import { ScenarioFlow, BaseNetwork } from '../../types/base';
 import { BaseProtocolOverview } from './BaseProtocolOverview';
 import { BasePredeploysViewer } from './BasePredeploysViewer';
 import { BasePreinstallsViewer } from './BasePreinstallsViewer';
 import { BaseDeFiIntegrationsViewer } from './BaseDeFiIntegrationsViewer';
+import { BaseStandardBridgesViewer } from './BaseStandardBridgesViewer';
 
 interface BaseDocsGuidesProps {
   onSelectSimulatorFlow: (flowId: ScenarioFlow) => void;
@@ -34,7 +36,7 @@ export const BaseDocsGuides: React.FC<BaseDocsGuidesProps> = ({
   onSelectSimulatorFlow,
   currentNetwork,
 }) => {
-  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'defi' | 'b20'>('protocol');
+  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'defi' | 'b20'>('protocol');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const guides = [
@@ -166,6 +168,18 @@ await tokenContract.write.setTransfersPaused([true]);`,
           </button>
 
           <button
+            onClick={() => setActiveSection('bridges')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'bridges'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <ArrowDownUp className="h-4 w-4" />
+            <span>Standard Bridges (L1 ↔ L2)</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('defi')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
               activeSection === 'defi'
@@ -210,10 +224,13 @@ await tokenContract.write.setTransfersPaused([true]);`,
       {/* SECTION 3: BASE PREINSTALLED UTILITY CONTRACTS */}
       {activeSection === 'preinstalls' && <BasePreinstallsViewer currentNetwork={currentNetwork} />}
 
-      {/* SECTION 4: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
+      {/* SECTION 4: STANDARD BRIDGES (L1 ↔ L2) SPECIFICATION */}
+      {activeSection === 'bridges' && <BaseStandardBridgesViewer currentNetwork={currentNetwork} />}
+
+      {/* SECTION 5: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
       {activeSection === 'defi' && <BaseDeFiIntegrationsViewer currentNetwork={currentNetwork} />}
 
-      {/* SECTION 5: B20 ASSET RECIPES */}
+      {/* SECTION 6: B20 ASSET RECIPES */}
       {activeSection === 'b20' && (
         <div className="space-y-6 animate-fadeIn">
           {/* Header */}

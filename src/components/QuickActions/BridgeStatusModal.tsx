@@ -196,6 +196,16 @@ export const BridgeStatusModal: React.FC<BridgeStatusModalProps> = ({
 
               <div className="space-y-2 text-[11px]">
                 <div className="flex items-center justify-between p-2 rounded-lg bg-[#141722] border border-[#1f2537]">
+                  <span className="text-[#8a91a0]">L2 StandardBridge (Predeploy):</span>
+                  <span className="text-[#3c8aff] font-bold">0x4200000000000000000000000000000000000010</span>
+                </div>
+
+                <div className="flex items-center justify-between p-2 rounded-lg bg-[#141722] border border-[#1f2537]">
+                  <span className="text-[#8a91a0]">L1 StandardBridge:</span>
+                  <span className="text-white">0x3154Cf16ccdb4C6d922629664174b904d80F2C35</span>
+                </div>
+
+                <div className="flex items-center justify-between p-2 rounded-lg bg-[#141722] border border-[#1f2537]">
                   <span className="text-[#8a91a0]">L1 OptimismPortal:</span>
                   <span className="text-white">0x49048044D57e1C92A77f79988d21Fa8fAF74E97e</span>
                 </div>

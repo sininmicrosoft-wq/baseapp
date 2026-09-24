@@ -310,6 +310,22 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       },
     },
     {
+      id: 'tab-bridges',
+      title: 'Standard Bridges (L1 ↔ L2 Specification)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'StandardBridge.sol, L2StandardBridge (0x4200...10), and CrossDomainMessenger mechanics',
+      icon: ArrowDownUp,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: 'Bridges Spec',
+      badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
       id: 'tab-config',
       title: 'Settings & App Configuration',
       category: 'tabs' as const,
@@ -518,6 +534,23 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       badgeColor: 'bg-white/10 text-white',
       action: () => {
         navigator.clipboard.writeText('0x000000000022D473030F116dDEE9F6B43aC78BA3');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-l2standardbridge',
+      title: 'Copy L2StandardBridge Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Canonical predeploy 0x4200000000000000000000000000000000000010',
+      icon: Copy,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: '0x4200...10',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        navigator.clipboard.writeText('0x4200000000000000000000000000000000000010');
         triggerConfetti();
         handleToggleOpen(false);
       },
