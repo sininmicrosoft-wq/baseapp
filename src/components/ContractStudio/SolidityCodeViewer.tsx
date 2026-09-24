@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   FileCode2, 
   Copy, 
@@ -8,11 +8,13 @@ import {
   Sparkles, 
   ExternalLink,
   ShieldCheck,
+  ShieldAlert,
   Cpu
 } from 'lucide-react';
 import { B20_SOLIDITY_CODE } from '../../data/mockBaseData';
 import { BaseNetwork, TxLogEntry } from '../../types/base';
 import { generateRandomAddress, generateTxHash, triggerConfetti } from '../../utils/web3Helper';
+import { SecurityScanPanel } from './SecurityScanPanel';
 
 interface SolidityCodeViewerProps {
   currentNetwork: BaseNetwork;
@@ -27,6 +29,10 @@ export const SolidityCodeViewer: React.FC<SolidityCodeViewerProps> = ({
   const [activeTab, setActiveTab] = useState<'solidity' | 'abi' | 'deploy-cli'>('solidity');
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployedAddress, setDeployedAddress] = useState<string | null>(null);
+  const [isSecurityScanOpen, setIsSecurityScanOpen] = useState(true);
+  const [highlightedLine, setHighlightedLine] = useState<number | null>(null);
+
+  const solidityLines = useMemo(() => B20_SOLIDITY_CODE.trim().split('\n'), []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(B20_SOLIDITY_CODE);
@@ -132,6 +138,23 @@ export const SolidityCodeViewer: React.FC<SolidityCodeViewerProps> = ({
 
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <button
+            onClick={() => setIsSecurityScanOpen((prev) => !prev)}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all ${
+              isSecurityScanOpen
+                ? 'bg-[#0052ff] border-[#0052ff] text-white shadow-lg shadow-[#0052ff]/25'
+                : 'bg-[#1a1d24] hover:bg-[#222733] border-[#2b303c] text-[#dee1e7]'
+            }`}
+          >
+            <ShieldCheck className={`h-3.5 w-3.5 ${isSecurityScanOpen ? 'text-white' : 'text-[#66c800]'}`} />
+            <span>Security Scan</span>
+            <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono font-bold ${
+              isSecurityScanOpen ? 'bg-white/20 text-white' : 'bg-[#66c800]/20 text-[#66c800]'
+            }`}>
+              Audit
+            </span>
+          </button>
+
+          <button
             onClick={handleCopy}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1a1d24] hover:bg-[#222733] border border-[#2b303c] text-xs font-semibold text-[#dee1e7] transition-colors"
           >
@@ -183,88 +206,152 @@ export const SolidityCodeViewer: React.FC<SolidityCodeViewerProps> = ({
       )}
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#232730] pb-2">
-        <button
-          onClick={() => setActiveTab('solidity')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
-            activeTab === 'solidity'
-              ? 'bg-[#0052ff] text-white'
-              : 'text-[#8a91a0] hover:text-white bg-[#14161c]'
-          }`}
-        >
-          Solidity Code (.sol)
-        </button>
-        <button
-          onClick={() => setActiveTab('abi')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
-            activeTab === 'abi'
-              ? 'bg-[#0052ff] text-white'
-              : 'text-[#8a91a0] hover:text-white bg-[#14161c]'
-          }`}
-        >
-          Contract ABI JSON
-        </button>
-        <button
-          onClick={() => setActiveTab('deploy-cli')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
-            activeTab === 'deploy-cli'
-              ? 'bg-[#0052ff] text-white'
-              : 'text-[#8a91a0] hover:text-white bg-[#14161c]'
-          }`}
-        >
-          Foundry & Hardhat CLI
-        </button>
+      <div className="flex items-center justify-between border-b border-[#232730] pb-2">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab('solidity')}
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
+              activeTab === 'solidity'
+                ? 'bg-[#0052ff] text-white'
+                : 'text-[#8a91a0] hover:text-white bg-[#14161c]'
+            }`}
+          >
+            Solidity Code (.sol)
+          </button>
+          <button
+            onClick={() => setActiveTab('abi')}
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
+              activeTab === 'abi'
+                ? 'bg-[#0052ff] text-white'
+                : 'text-[#8a91a0] hover:text-white bg-[#14161c]'
+            }`}
+          >
+            Contract ABI JSON
+          </button>
+          <button
+            onClick={() => setActiveTab('deploy-cli')}
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
+              activeTab === 'deploy-cli'
+                ? 'bg-[#0052ff] text-white'
+                : 'text-[#8a91a0] hover:text-white bg-[#14161c]'
+            }`}
+          >
+            Foundry & Hardhat CLI
+          </button>
+        </div>
+
+        {!isSecurityScanOpen && (
+          <button
+            onClick={() => setIsSecurityScanOpen(true)}
+            className="text-xs font-mono text-[#3c8aff] hover:underline flex items-center gap-1"
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            <span>Open Security Panel</span>
+          </button>
+        )}
       </div>
 
-      {/* Code Display Area */}
-      <div className="rounded-2xl border border-[#232730] bg-[#0c0e12] overflow-hidden shadow-2xl">
-        <div className="flex items-center justify-between px-4 py-2.5 bg-[#14161c] border-b border-[#232730] text-xs font-mono text-[#717886]">
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#fc401f]/60"></span>
-            <span className="h-2.5 w-2.5 rounded-full bg-[#ffd12f]/60"></span>
-            <span className="h-2.5 w-2.5 rounded-full bg-[#66c800]/60"></span>
-            <span className="ml-2 text-white font-medium">
-              {activeTab === 'solidity' ? 'contracts/BaseB20Asset.sol' : activeTab === 'abi' ? 'BaseB20Asset.json' : 'deploy.sh'}
-            </span>
-          </div>
-          <span>Solidity 0.8.24 · Base L2 EVM</span>
-        </div>
-
-        <div className="p-4 overflow-x-auto max-h-[600px] text-xs font-mono leading-relaxed text-[#dee1e7]">
-          {activeTab === 'solidity' && (
-            <pre>
-              <code>{B20_SOLIDITY_CODE}</code>
-            </pre>
-          )}
-
-          {activeTab === 'abi' && (
-            <pre>
-              <code>{JSON.stringify(sampleAbi, null, 2)}</code>
-            </pre>
-          )}
-
-          {activeTab === 'deploy-cli' && (
-            <div className="space-y-4 text-xs font-mono">
-              <div className="p-4 rounded-xl bg-[#14161c] border border-[#232730]">
-                <div className="text-[#3c8aff] font-bold mb-2"># Deploy with Foundry (forge script)</div>
-                <div className="text-white">
-                  forge create src/BaseB20Asset.sol:BaseB20Asset \<br />
-                  &nbsp;&nbsp;--rpc-url https://mainnet.base.org \<br />
-                  &nbsp;&nbsp;--private-key $DEPLOYER_KEY \<br />
-                  &nbsp;&nbsp;--constructor-args "Example Corp Class A" "EXM" 6 1000000000000 0xYourAdminAddress \<br />
-                  &nbsp;&nbsp;--verify --etherscan-api-key $BASESCAN_API_KEY
-                </div>
+      {/* Main Content Area: Split View when Security Panel is Open */}
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        {/* Code Display Area */}
+        <div className="flex-1 w-full min-w-0">
+          <div className="rounded-2xl border border-[#232730] bg-[#0c0e12] overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-[#14161c] border-b border-[#232730] text-xs font-mono text-[#717886]">
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#fc401f]/60"></span>
+                <span className="h-2.5 w-2.5 rounded-full bg-[#ffd12f]/60"></span>
+                <span className="h-2.5 w-2.5 rounded-full bg-[#66c800]/60"></span>
+                <span className="ml-2 text-white font-medium">
+                  {activeTab === 'solidity' ? 'contracts/BaseB20Asset.sol' : activeTab === 'abi' ? 'BaseB20Asset.json' : 'deploy.sh'}
+                </span>
               </div>
-
-              <div className="p-4 rounded-xl bg-[#14161c] border border-[#232730]">
-                <div className="text-[#66c800] font-bold mb-2"># Deploy with Hardhat Ignition</div>
-                <div className="text-white">
-                  npx hardhat ignition deploy ./ignition/modules/B20Module.ts --network base
-                </div>
-              </div>
+              <span>Solidity 0.8.24 · Base L2 EVM</span>
             </div>
-          )}
+
+            <div className="p-4 overflow-x-auto max-h-[640px] text-xs font-mono leading-relaxed text-[#dee1e7]">
+              {activeTab === 'solidity' && (
+                <div className="flex font-mono text-xs leading-relaxed">
+                  {/* Line Numbers Column */}
+                  <div className="select-none pr-3 text-right text-[#454c5c] border-r border-[#232730] mr-4 space-y-0 min-w-[2.5rem]">
+                    {solidityLines.map((_, idx) => (
+                      <div
+                        key={idx}
+                        id={`sol-line-${idx + 1}`}
+                        className={`h-5 leading-5 text-[11px] transition-colors ${
+                          highlightedLine === idx + 1 ? 'text-[#3c8aff] font-bold bg-[#0052ff]/20 rounded-l' : ''
+                        }`}
+                      >
+                        {idx + 1}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Code Text Column */}
+                  <div className="flex-1 overflow-x-auto">
+                    {solidityLines.map((line, idx) => (
+                      <div
+                        key={idx}
+                        className={`h-5 leading-5 whitespace-pre font-mono transition-colors ${
+                          highlightedLine === idx + 1
+                            ? 'bg-[#0052ff]/20 text-white font-semibold px-1 rounded-r'
+                            : ''
+                        }`}
+                      >
+                        {line || ' '}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'abi' && (
+                <pre>
+                  <code>{JSON.stringify(sampleAbi, null, 2)}</code>
+                </pre>
+              )}
+
+              {activeTab === 'deploy-cli' && (
+                <div className="space-y-4 text-xs font-mono">
+                  <div className="p-4 rounded-xl bg-[#14161c] border border-[#232730]">
+                    <div className="text-[#3c8aff] font-bold mb-2"># Deploy with Foundry (forge script)</div>
+                    <div className="text-white">
+                      forge create src/BaseB20Asset.sol:BaseB20Asset \<br />
+                      &nbsp;&nbsp;--rpc-url https://mainnet.base.org \<br />
+                      &nbsp;&nbsp;--private-key $DEPLOYER_KEY \<br />
+                      &nbsp;&nbsp;--constructor-args "Example Corp Class A" "EXM" 6 1000000000000 0xYourAdminAddress \<br />
+                      &nbsp;&nbsp;--verify --etherscan-api-key $BASESCAN_API_KEY
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-[#14161c] border border-[#232730]">
+                    <div className="text-[#66c800] font-bold mb-2"># Deploy with Hardhat Ignition</div>
+                    <div className="text-white">
+                      npx hardhat ignition deploy ./ignition/modules/B20Module.ts --network base
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
+
+        {/* Security Scan Side Panel */}
+        {isSecurityScanOpen && (
+          <div className="w-full lg:w-[460px] flex-shrink-0 lg:sticky lg:top-4">
+            <SecurityScanPanel
+              solidityCode={B20_SOLIDITY_CODE}
+              onClose={() => setIsSecurityScanOpen(false)}
+              onSelectLine={(line) => {
+                setHighlightedLine(line);
+                setActiveTab('solidity');
+                setTimeout(() => {
+                  const el = document.getElementById(`sol-line-${line}`);
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 50);
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
