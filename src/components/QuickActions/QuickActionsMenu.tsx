@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Zap, 
   ArrowDownUp, 
@@ -9,19 +9,25 @@ import {
   Check, 
   Smartphone, 
   ShieldCheck, 
-  Coins, 
   Workflow, 
   X, 
   ChevronRight, 
-  Sparkles,
-  Command,
-  FileCode,
-  Network,
-  Wallet,
-  KeyRound
+  Command, 
+  FileCode, 
+  Wallet, 
+  KeyRound,
+  Share2,
+  Settings,
+  Layers,
+  Users,
+  Compass,
+  Globe,
+  Radio,
+  BookOpen
 } from 'lucide-react';
-import { BaseNetwork, WalletAccount } from '../../types/base';
-import { triggerConfetti } from '../../utils/web3Helper';
+import { BaseNetwork, WalletAccount, AssetMetadata } from '../../types/base';
+import { BASE_NETWORKS } from '../../data/mockBaseData';
+import { triggerConfetti, shortenAddress } from '../../utils/web3Helper';
 
 interface QuickActionsMenuProps {
   currentNetwork: BaseNetwork;
@@ -31,6 +37,12 @@ interface QuickActionsMenuProps {
   onSelectTab: (tabId: string) => void;
   onQuickConnect?: () => void;
   contractAddress?: string;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onOpen?: () => void;
+  onOpenShareState?: () => void;
+  onChangeNetwork?: (network: BaseNetwork) => void;
+  asset?: AssetMetadata;
 }
 
 export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
@@ -41,26 +53,61 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   onSelectTab,
   onQuickConnect,
   contractAddress = '0xB20019e07cA8F6A3E147eFbA9D987116e7a18453',
+  isOpen: propIsOpen,
+  onClose,
+  onOpen,
+  onOpenShareState,
+  onChangeNetwork,
+  asset,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = propIsOpen !== undefined ? propIsOpen : internalOpen;
+
+  const handleToggleOpen = (nextOpen: boolean) => {
+    if (nextOpen) {
+      if (onOpen) onOpen();
+      setInternalOpen(true);
+    } else {
+      if (onClose) onClose();
+      setInternalOpen(false);
+    }
+  };
+
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<'all' | 'tabs' | 'actions' | 'network'>('all');
   const [copiedContract, setCopiedContract] = useState(false);
   const [copiedWallet, setCopiedWallet] = useState(false);
   const [faucetPending, setFaucetPending] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  // Global Keyboard Shortcut: Cmd+K / Ctrl+K or Q to toggle
+  const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // Global Keyboard Shortcut: Ctrl+K or Cmd+K
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setIsOpen((prev) => !prev);
+        handleToggleOpen(!isOpen);
       } else if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
+        e.preventDefault();
+        handleToggleOpen(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  // Focus input when opened
+  useEffect(() => {
+    if (isOpen) {
+      setSearchQuery('');
+      setSelectedIndex(0);
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+    }
   }, [isOpen]);
 
   const handleCopyContract = () => {
@@ -78,12 +125,15 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   const handleFaucetTap = () => {
     setFaucetPending(true);
     onRequestFaucet();
+    triggerConfetti();
     setTimeout(() => {
       setFaucetPending(false);
+      handleToggleOpen(false);
     }, 600);
   };
 
   const handleOpenExplorer = () => {
+    handleToggleOpen(false);
     if (currentNetwork.explorerUrl) {
       window.open(currentNetwork.explorerUrl, '_blank', 'noopener,noreferrer');
     } else {
@@ -91,153 +141,373 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
     }
   };
 
-  // Quick Action Items Definition
-  const actions = [
+  // All Command Palette Items
+  const allCommands = [
+    // --- CATEGORY: TABS NAVIGATION ---
     {
-      id: 'quick-connect',
+      id: 'tab-miniapp',
+      title: 'Mini App Mode',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'Farcaster Frames v2, mobile viewport & passkey interaction',
+      icon: Smartphone,
+      iconColor: 'text-[#a855f7]',
+      iconBg: 'bg-[#a855f7]/15 border border-[#a855f7]/30',
+      badge: 'Frames v2',
+      badgeColor: 'bg-[#a855f7]/20 text-[#a855f7]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('miniapp');
+      },
+    },
+    {
+      id: 'tab-simulator',
+      title: 'B20 Flow Simulator',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'Asset lifecycle, stock split rebase multiplier & allowlist governance',
+      icon: Layers,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: 'Core Engine',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('simulator');
+      },
+    },
+    {
+      id: 'tab-workshop',
+      title: 'Asset Creator Workshop',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'Design new Tokenized Equity, Sovereign Debt, or Real Estate RWA',
+      icon: Compass,
+      iconColor: 'text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: 'Deploy RWA',
+      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('workshop');
+      },
+    },
+    {
+      id: 'tab-captable',
+      title: 'Cap Table Manager',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'Inspect shareholder holdings, KYC/AML approval & category weights',
+      icon: Users,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: 'Shareholders',
+      badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('captable');
+      },
+    },
+    {
+      id: 'tab-contracts',
+      title: 'Solidity Contracts & Security Scan',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'View Diamond facets, B20PolicyRegistry & run 10-rule automated scan',
+      icon: FileCode,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: 'Solidity 0.8.28',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('contracts');
+      },
+    },
+    {
+      id: 'tab-paymaster',
+      title: 'Gasless Paymaster Demo',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'Test ERC-4337 sponsored transfers with Passkeys & zero gas cost',
+      icon: Zap,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: 'Zero Gas',
+      badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('paymaster');
+      },
+    },
+    {
+      id: 'tab-guides',
+      title: 'Protocol Guides & Derivation Pipeline',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: '8-stage Rollup node architecture, specifications & Base documentation',
+      icon: BookOpen,
+      iconColor: 'text-[#dee1e7]',
+      iconBg: 'bg-white/10 border border-white/20',
+      badge: 'Docs',
+      badgeColor: 'bg-white/10 text-white',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
+      id: 'tab-config',
+      title: 'Settings & App Configuration',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'Manage custom RPC endpoints, contract addresses, and system diagnostics',
+      icon: Settings,
+      iconColor: 'text-[#dee1e7]',
+      iconBg: 'bg-white/10 border border-white/20',
+      badge: 'Settings',
+      badgeColor: 'bg-white/10 text-white',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('config');
+      },
+    },
+
+    // --- CATEGORY: QUICK ACTIONS ---
+    {
+      id: 'action-share-state',
+      title: 'Share State Snapshot',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Generate high-res 1200x675 HTML5 canvas image of RWA metrics & cap table',
+      icon: Share2,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: 'Canvas HD',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        handleToggleOpen(false);
+        if (onOpenShareState) {
+          onOpenShareState();
+        }
+      },
+    },
+    {
+      id: 'action-faucet',
+      title: 'Request Faucet Gas Drop (+0.5 ETH)',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: `Instant gas drop to active wallet ${shortenAddress(wallet.address)}`,
+      icon: Droplet,
+      iconColor: 'text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: '+0.5 ETH',
+      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      action: handleFaucetTap,
+    },
+    {
+      id: 'action-bridge',
+      title: 'Check Bridge Status (L1 ↔ L2)',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Inspect OptimismPortal, DisputeGameFactory & 7-day challenge status',
+      icon: ArrowDownUp,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: 'L1 ↔ L2',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        handleToggleOpen(false);
+        onOpenBridgeStatus();
+      },
+    },
+    {
+      id: 'action-wallet',
       title: wallet.isConnected ? 'Manage Connected Wallet' : 'Quick Connect Wallet',
-      category: 'Wallet & Access',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
       subtitle: wallet.isConnected
-        ? `Connected: ${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)} (${wallet.isSmartWallet ? 'Passkey' : 'Injected'})`
-        : 'Connect Base Smart Wallet with Passkeys or Browser Wallet',
+        ? `${shortenAddress(wallet.address)} · ${wallet.isSmartWallet ? 'Passkey Smart Wallet' : 'Injected Wallet'}`
+        : 'Connect Base Smart Wallet with biometric Passkeys or Browser Extension',
       icon: wallet.isConnected ? Wallet : KeyRound,
       iconColor: 'text-[#3c8aff]',
-      iconBg: 'bg-[#0052ff]/15',
-      badge: wallet.isConnected ? (wallet.isSmartWallet ? 'Passkey' : 'Injected') : '1-Click',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: wallet.isConnected ? 'Connected' : '1-Click',
       badgeColor: wallet.isConnected ? 'bg-[#66c800]/20 text-[#66c800]' : 'bg-[#0052ff]/20 text-[#3c8aff]',
       action: () => {
-        setIsOpen(false);
+        handleToggleOpen(false);
         if (onQuickConnect) {
           onQuickConnect();
         }
       },
     },
     {
-      id: 'bridge',
-      title: 'Check Bridge Status',
-      category: 'Network & Infrastructure',
-      subtitle: 'Inspect OptimismPortal, DisputeGameFactory & 7-day challenge period',
-      icon: ArrowDownUp,
-      iconColor: 'text-[#3c8aff]',
-      iconBg: 'bg-[#0052ff]/15',
-      badge: 'L1 ↔ L2',
-      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
-      action: () => {
-        setIsOpen(false);
-        onOpenBridgeStatus();
-      },
+      id: 'action-copy-contract',
+      title: 'Copy B20 Token Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: `Clipboard: ${contractAddress}`,
+      icon: Copy,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: copiedContract ? 'Copied!' : 'Copy',
+      badgeColor: copiedContract ? 'bg-[#66c800]/20 text-[#66c800]' : 'bg-white/10 text-white',
+      action: handleCopyContract,
     },
     {
-      id: 'faucet',
-      title: 'Request Faucet Funds',
-      category: 'Funds & Gas',
-      subtitle: `Instant +0.5 ETH to ${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}`,
-      icon: Droplet,
-      iconColor: 'text-[#66c800]',
-      iconBg: 'bg-[#66c800]/15',
-      badge: '+0.5 ETH',
-      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
-      action: handleFaucetTap,
+      id: 'action-copy-wallet',
+      title: 'Copy Active Wallet Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: `Clipboard: ${wallet.address}`,
+      icon: Copy,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: copiedWallet ? 'Copied!' : 'Copy',
+      badgeColor: copiedWallet ? 'bg-[#66c800]/20 text-[#66c800]' : 'bg-white/10 text-white',
+      action: handleCopyWallet,
     },
     {
-      id: 'explorer',
-      title: 'View Explorer',
-      category: 'Network & Infrastructure',
-      subtitle: `Browse ${currentNetwork.name} on Basescan / Blockscout`,
+      id: 'action-explorer',
+      title: 'Open Basescan Explorer',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: `Explore contracts and rollup transactions on ${currentNetwork.name}`,
       icon: ExternalLink,
       iconColor: 'text-[#ffd12f]',
-      iconBg: 'bg-[#ffd12f]/15',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
       badge: 'Basescan',
       badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
       action: handleOpenExplorer,
     },
+
+    // --- CATEGORY: NETWORK ---
     {
-      id: 'miniapp',
-      title: 'Switch to Mini App Mode',
-      category: 'Experiences',
-      subtitle: 'Mobile-first Farcaster Frame v2 / Warpcast & Smart Wallet UI',
-      icon: Smartphone,
-      iconColor: 'text-[#a855f7]',
-      iconBg: 'bg-[#a855f7]/15',
-      badge: 'Frames v2',
-      badgeColor: 'bg-[#a855f7]/20 text-[#a855f7]',
+      id: 'net-vibenet',
+      title: 'Switch to Base Vibenet',
+      category: 'network' as const,
+      categoryLabel: 'Network',
+      subtitle: 'Chain ID: 84538453 · 1.0s fast blocks · B20 Devnet',
+      icon: Globe,
+      iconColor: 'text-[#0052ff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: currentNetwork.id === 'base-vibenet' ? 'Active' : 'Devnet',
+      badgeColor: currentNetwork.id === 'base-vibenet' ? 'bg-[#66c800]/20 text-[#66c800]' : 'bg-[#0052ff]/20 text-[#3c8aff]',
       action: () => {
-        setIsOpen(false);
-        onSelectTab('miniapp');
+        if (onChangeNetwork && BASE_NETWORKS['base-vibenet']) {
+          onChangeNetwork(BASE_NETWORKS['base-vibenet']);
+        }
+        handleToggleOpen(false);
       },
     },
     {
-      id: 'paymaster',
-      title: 'Test Gasless Paymaster',
-      category: 'Gas & Execution',
-      subtitle: 'Simulate ERC-4337 Passkey sponsor transfers on Base',
-      icon: Zap,
+      id: 'net-sepolia',
+      title: 'Switch to Base Sepolia',
+      category: 'network' as const,
+      categoryLabel: 'Network',
+      subtitle: 'Chain ID: 84532 · 2.0s blocks · Public Testnet',
+      icon: Radio,
       iconColor: 'text-[#ffd12f]',
-      iconBg: 'bg-[#ffd12f]/15',
-      badge: 'Zero Gas',
-      badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: currentNetwork.id === 'base-sepolia' ? 'Active' : 'Testnet',
+      badgeColor: currentNetwork.id === 'base-sepolia' ? 'bg-[#66c800]/20 text-[#66c800]' : 'bg-[#ffd12f]/20 text-[#ffd12f]',
       action: () => {
-        setIsOpen(false);
-        onSelectTab('paymaster');
+        if (onChangeNetwork && BASE_NETWORKS['base-sepolia']) {
+          onChangeNetwork(BASE_NETWORKS['base-sepolia']);
+        }
+        handleToggleOpen(false);
       },
     },
     {
-      id: 'derivation',
-      title: 'Inspect Derivation Pipeline',
-      category: 'Protocol Docs',
-      subtitle: '8-stage Rollup Node execution & wire format specifications',
-      icon: Workflow,
-      iconColor: 'text-[#3c8aff]',
-      iconBg: 'bg-[#0052ff]/15',
-      badge: '8 Stages',
-      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
-      action: () => {
-        setIsOpen(false);
-        onSelectTab('guides');
-      },
-    },
-    {
-      id: 'contracts',
-      title: 'View Solidity Source Code',
-      category: 'Smart Contracts',
-      subtitle: 'Inspect B20PolicyRegistry, B20Token, and Diamond standard',
-      icon: FileCode,
+      id: 'net-mainnet',
+      title: 'Switch to Base Mainnet',
+      category: 'network' as const,
+      categoryLabel: 'Network',
+      subtitle: 'Chain ID: 8453 · 2.0s blocks · Production Rollup',
+      icon: ShieldCheck,
       iconColor: 'text-[#66c800]',
-      iconBg: 'bg-[#66c800]/15',
-      badge: 'Solidity 0.8.28',
-      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: currentNetwork.id === 'base-mainnet' ? 'Active' : 'Mainnet',
+      badgeColor: currentNetwork.id === 'base-mainnet' ? 'bg-[#66c800]/20 text-[#66c800]' : 'bg-[#66c800]/20 text-[#66c800]',
       action: () => {
-        setIsOpen(false);
-        onSelectTab('contracts');
+        if (onChangeNetwork && BASE_NETWORKS['base-mainnet']) {
+          onChangeNetwork(BASE_NETWORKS['base-mainnet']);
+        }
+        handleToggleOpen(false);
       },
     },
   ];
 
-  const filteredActions = searchQuery.trim()
-    ? actions.filter(
-        (a) =>
-          a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          a.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          a.category.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : actions;
+  // Filtering
+  const filteredCommands = allCommands.filter((cmd) => {
+    const matchesCategory = activeCategory === 'all' || cmd.category === activeCategory;
+    if (!matchesCategory) return false;
+
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      cmd.title.toLowerCase().includes(q) ||
+      cmd.subtitle.toLowerCase().includes(q) ||
+      cmd.categoryLabel.toLowerCase().includes(q) ||
+      cmd.badge.toLowerCase().includes(q)
+    );
+  });
+
+  // Keyboard navigation inside filtered list
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [searchQuery, activeCategory]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyNav = (e: KeyboardEvent) => {
+      if (filteredCommands.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev + 1) % filteredCommands.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev - 1 + filteredCommands.length) % filteredCommands.length);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (filteredCommands[selectedIndex]) {
+          filteredCommands[selectedIndex].action();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyNav);
+    return () => window.removeEventListener('keydown', handleKeyNav);
+  }, [isOpen, filteredCommands, selectedIndex]);
+
+  // Scroll active item into view
+  useEffect(() => {
+    if (listRef.current) {
+      const activeEl = listRef.current.querySelector(`[data-index="${selectedIndex}"]`);
+      if (activeEl) {
+        activeEl.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [selectedIndex]);
 
   return (
     <>
       {/* FLOATING TRIGGER BUTTON (Fixed Bottom-Right) */}
       <div className="fixed bottom-14 right-4 sm:right-6 z-40 flex items-center gap-2">
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => handleToggleOpen(!isOpen)}
           className="group relative flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-[#0052ff] to-[#0042d0] text-white shadow-xl shadow-[#0052ff]/30 hover:shadow-2xl hover:shadow-[#0052ff]/50 hover:scale-[1.03] transition-all border border-[#3c8aff]/40 focus:outline-none"
-          title="Quick Actions (⌘K)"
+          title="Command Palette (Ctrl+K)"
         >
           <div className="h-6 w-6 rounded-lg bg-white/20 flex items-center justify-center font-bold">
-            <Zap className="h-4 w-4 text-white group-hover:rotate-12 transition-transform" />
+            <Command className="h-4 w-4 text-white group-hover:rotate-12 transition-transform" />
           </div>
-          <span className="text-xs font-bold font-sans tracking-wide">Quick Actions</span>
+          <span className="text-xs font-bold font-sans tracking-wide">Command Palette</span>
           
           <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-black/30 text-white/90 border border-white/20">
-            ⌘K
+            Ctrl+K
           </kbd>
 
           <span className="relative flex h-2 w-2">
@@ -247,135 +517,213 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
         </button>
       </div>
 
-      {/* FLOATING QUICK ACTIONS MODAL / SIDEBAR DRAWER */}
+      {/* FULL COMMAND PALETTE MODAL (Centered, Spotlight-style) */}
       {isOpen && (
         <div 
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:justify-end p-0 sm:p-6 bg-black/60 backdrop-blur-sm animate-fadeIn"
-          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-50 flex items-start justify-center pt-12 sm:pt-20 px-3 sm:px-4 bg-black/80 backdrop-blur-md animate-fadeIn"
+          onClick={() => handleToggleOpen(false)}
         >
           <div 
-            className="w-full sm:w-[440px] max-h-[85vh] sm:max-h-[88vh] rounded-t-3xl sm:rounded-3xl border border-[#232730] bg-[#111317] p-5 shadow-2xl flex flex-col space-y-4 text-white overflow-hidden"
+            className="w-full max-w-2xl max-h-[85vh] rounded-3xl border border-[#262c3d] bg-[#0d0f15]/95 backdrop-blur-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_35px_rgba(0,82,255,0.18)] flex flex-col text-white overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#1f232c]">
-              <div className="flex items-center gap-2.5">
-                <div className="h-8 w-8 rounded-xl bg-[#0052ff]/20 text-[#3c8aff] flex items-center justify-center border border-[#0052ff]/30">
-                  <Command className="h-4 w-4" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-white">Quick Actions & Shortcuts</h3>
-                  <p className="text-[11px] text-[#8a91a0]">Instant tools for Base L2 & B20 Studio</p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg text-[#8a91a0] hover:text-white hover:bg-[#1a1d24] transition-colors"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* Instant Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#8a91a0]" />
+            {/* Top Search Input Box */}
+            <div className="flex items-center gap-3 px-4 sm:px-5 py-4 border-b border-[#1f2433] bg-[#12151f]">
+              <Search className="h-5 w-5 text-[#3c8aff] shrink-0" />
               <input
+                ref={inputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search shortcuts (Bridge, Faucet, Explorer, Mini App)..."
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#0a0b0e] border border-[#232730] text-xs text-white placeholder-[#5a6272] focus:border-[#0052ff] focus:outline-none transition-colors"
-                autoFocus
+                placeholder="Search commands, navigate tabs, or run quick actions..."
+                className="flex-1 bg-transparent text-sm sm:text-base text-white placeholder-[#687285] focus:outline-none font-medium"
               />
+              <div className="flex items-center gap-1.5 shrink-0">
+                <kbd className="hidden sm:inline-block px-2 py-0.5 rounded-md text-[10px] font-mono bg-[#1c2130] text-[#8a91a0] border border-[#2b3245]">
+                  ESC to close
+                </kbd>
+                <button
+                  onClick={() => handleToggleOpen(false)}
+                  className="p-1 rounded-lg text-[#8a91a0] hover:text-white hover:bg-[#1f2535] transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             </div>
 
-            {/* Quick Copy / Status Chips */}
-            <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+            {/* Filter Category Tabs & Quick Chips */}
+            <div className="flex items-center justify-between px-4 sm:px-5 py-2.5 bg-[#0f121a] border-b border-[#1a1e2b] gap-2 overflow-x-auto text-xs">
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  onClick={() => setActiveCategory('all')}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+                    activeCategory === 'all'
+                      ? 'bg-[#0052ff] text-white shadow-sm'
+                      : 'text-[#8a91a0] hover:text-white hover:bg-[#181c27]'
+                  }`}
+                >
+                  All ({allCommands.length})
+                </button>
+                <button
+                  onClick={() => setActiveCategory('tabs')}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+                    activeCategory === 'tabs'
+                      ? 'bg-[#0052ff] text-white shadow-sm'
+                      : 'text-[#8a91a0] hover:text-white hover:bg-[#181c27]'
+                  }`}
+                >
+                  Tabs Navigation (8)
+                </button>
+                <button
+                  onClick={() => setActiveCategory('actions')}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+                    activeCategory === 'actions'
+                      ? 'bg-[#0052ff] text-white shadow-sm'
+                      : 'text-[#8a91a0] hover:text-white hover:bg-[#181c27]'
+                  }`}
+                >
+                  Quick Actions (7)
+                </button>
+                <button
+                  onClick={() => setActiveCategory('network')}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+                    activeCategory === 'network'
+                      ? 'bg-[#0052ff] text-white shadow-sm'
+                      : 'text-[#8a91a0] hover:text-white hover:bg-[#181c27]'
+                  }`}
+                >
+                  Network (3)
+                </button>
+              </div>
+
+              <div className="hidden sm:flex items-center gap-2 text-[11px] font-mono text-[#717886] shrink-0">
+                <span className="flex items-center gap-1">
+                  <kbd className="px-1.5 py-0.5 rounded bg-[#181c27] text-white text-[10px]">↑↓</kbd> navigate
+                </span>
+                <span className="flex items-center gap-1">
+                  <kbd className="px-1.5 py-0.5 rounded bg-[#181c27] text-white text-[10px]">↵</kbd> select
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Copy Chips Row */}
+            <div className="grid grid-cols-2 gap-2 p-3 bg-[#0a0c10] border-b border-[#181c27] text-xs font-mono">
               <button
                 onClick={handleCopyContract}
-                className="p-2.5 rounded-xl bg-[#0e1014] border border-[#1f232b] hover:border-[#3c8aff]/50 text-left transition-colors flex items-center justify-between"
+                className="px-3 py-2 rounded-xl bg-[#11141c] border border-[#1e2330] hover:border-[#0052ff]/50 text-left transition-all flex items-center justify-between group"
                 title="Click to copy B20 Token Address"
               >
                 <div className="truncate">
-                  <div className="text-[9px] text-[#8a91a0] uppercase">B20 Asset Token</div>
-                  <div className="text-[11px] text-white font-bold truncate">
-                    {contractAddress.slice(0, 6)}...{contractAddress.slice(-4)}
+                  <div className="text-[9px] text-[#717886] uppercase font-bold">B20 Token Address</div>
+                  <div className="text-[11px] text-white font-bold truncate group-hover:text-[#3c8aff]">
+                    {shortenAddress(contractAddress, 6)}
                   </div>
                 </div>
                 {copiedContract ? (
                   <Check className="h-3.5 w-3.5 text-[#66c800] shrink-0" />
                 ) : (
-                  <Copy className="h-3.5 w-3.5 text-[#717886] shrink-0" />
+                  <Copy className="h-3.5 w-3.5 text-[#717886] group-hover:text-white shrink-0" />
                 )}
               </button>
 
               <button
                 onClick={handleCopyWallet}
-                className="p-2.5 rounded-xl bg-[#0e1014] border border-[#1f232b] hover:border-[#3c8aff]/50 text-left transition-colors flex items-center justify-between"
-                title="Click to copy Wallet Address"
+                className="px-3 py-2 rounded-xl bg-[#11141c] border border-[#1e2330] hover:border-[#0052ff]/50 text-left transition-all flex items-center justify-between group"
+                title="Click to copy Connected Wallet Address"
               >
                 <div className="truncate">
-                  <div className="text-[9px] text-[#8a91a0] uppercase">Smart Wallet</div>
-                  <div className="text-[11px] text-white font-bold truncate">
-                    {wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}
+                  <div className="text-[9px] text-[#717886] uppercase font-bold">
+                    {wallet.isConnected ? 'Connected Wallet' : 'Wallet Address'}
+                  </div>
+                  <div className="text-[11px] text-white font-bold truncate group-hover:text-[#3c8aff]">
+                    {shortenAddress(wallet.address, 6)}
                   </div>
                 </div>
                 {copiedWallet ? (
                   <Check className="h-3.5 w-3.5 text-[#66c800] shrink-0" />
                 ) : (
-                  <Copy className="h-3.5 w-3.5 text-[#717886] shrink-0" />
+                  <Copy className="h-3.5 w-3.5 text-[#717886] group-hover:text-white shrink-0" />
                 )}
               </button>
             </div>
 
-            {/* Scrollable Action List */}
-            <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-[46vh]">
-              {filteredActions.map((act) => {
-                const Icon = act.icon;
+            {/* Scrollable Command List */}
+            <div 
+              ref={listRef}
+              className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-1.5 max-h-[50vh] min-h-[220px]"
+            >
+              {filteredCommands.map((cmd, idx) => {
+                const Icon = cmd.icon;
+                const isSelected = selectedIndex === idx;
+
                 return (
                   <button
-                    key={act.id}
-                    onClick={act.action}
-                    className="w-full p-2.5 rounded-xl bg-[#0e1014] hover:bg-[#151821] border border-[#1f232b] hover:border-[#0052ff]/40 text-left transition-all flex items-center justify-between group"
+                    key={cmd.id}
+                    data-index={idx}
+                    onClick={cmd.action}
+                    onMouseEnter={() => setSelectedIndex(idx)}
+                    className={`w-full p-2.5 sm:p-3 rounded-2xl text-left transition-all flex items-center justify-between group ${
+                      isSelected
+                        ? 'bg-[#0052ff]/20 border border-[#0052ff]/60 shadow-lg shadow-[#0052ff]/10 text-white'
+                        : 'bg-[#11141c]/60 hover:bg-[#141824] border border-[#1b202e] text-[#c5cad6]'
+                    }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`h-9 w-9 rounded-xl ${act.iconBg} ${act.iconColor} flex items-center justify-center shrink-0`}>
-                        <Icon className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`h-9 w-9 rounded-xl ${cmd.iconBg} ${cmd.iconColor} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
+                        <Icon className="h-4 w-4" />
                       </div>
-                      <div>
+                      <div className="truncate">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-xs text-white group-hover:text-[#3c8aff] transition-colors">
-                            {act.title}
+                          <span className={`font-bold text-xs sm:text-sm truncate ${isSelected ? 'text-white' : 'text-[#f0f2f5]'}`}>
+                            {cmd.title}
                           </span>
-                          <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono font-bold ${act.badgeColor}`}>
-                            {act.badge}
+                          <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono font-bold ${cmd.badgeColor} shrink-0`}>
+                            {cmd.badge}
                           </span>
                         </div>
-                        <p className="text-[10px] text-[#8a91a0] mt-0.5 line-clamp-1">{act.subtitle}</p>
+                        <p className="text-[11px] text-[#8a91a0] truncate mt-0.5">
+                          {cmd.subtitle}
+                        </p>
                       </div>
                     </div>
 
-                    <ChevronRight className="h-4 w-4 text-[#717886] group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
+                    <div className="flex items-center gap-2 shrink-0 ml-3">
+                      {isSelected ? (
+                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0052ff] text-[10px] font-mono font-bold text-white shadow-sm">
+                          <span>Enter</span>
+                          <ChevronRight className="h-3 w-3" />
+                        </div>
+                      ) : (
+                        <span className="text-[10px] font-mono text-[#5f687a] uppercase">
+                          {cmd.categoryLabel}
+                        </span>
+                      )}
+                    </div>
                   </button>
                 );
               })}
 
-              {filteredActions.length === 0 && (
-                <div className="text-center py-6 text-xs text-[#8a91a0]">
-                  No shortcuts found matching &quot;{searchQuery}&quot;
+              {filteredCommands.length === 0 && (
+                <div className="text-center py-12 text-[#8a91a0]">
+                  <Command className="h-8 w-8 mx-auto mb-2 text-[#464f61]" />
+                  <p className="text-xs font-semibold">No commands found matching &quot;{searchQuery}&quot;</p>
+                  <p className="text-[11px] text-[#636c7e] mt-1">Try searching for Faucet, Bridge, Share, Mini App, or Contracts</p>
                 </div>
               )}
             </div>
 
-            {/* Footer with network indicator */}
-            <div className="pt-2 border-t border-[#1f232c] flex items-center justify-between text-[11px] font-mono text-[#8a91a0]">
-              <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#66c800]"></span>
+            {/* Footer with network & quick status */}
+            <div className="px-4 py-2.5 bg-[#0a0c10] border-t border-[#181c27] flex items-center justify-between text-[11px] font-mono text-[#8a91a0]">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[#66c800] shadow-[0_0_6px_#66c800]"></span>
                 <span className="text-white font-medium">{currentNetwork.name}</span>
-                <span>(ID: {currentNetwork.chainId})</span>
+                <span className="text-[#687285] hidden sm:inline">(Chain ID: {currentNetwork.chainId})</span>
               </div>
-              <span>Gas: &lt;$0.001</span>
+              <div className="flex items-center gap-3">
+                <span className="text-[#66c800] font-bold">Gas &lt; $0.001</span>
+                <span className="text-[#687285]">|</span>
+                <span className="text-[#3c8aff]">Base L2</span>
+              </div>
             </div>
           </div>
         </div>

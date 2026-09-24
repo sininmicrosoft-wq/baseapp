@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Command } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { B20FlowSimulator } from './components/B20Studio/B20FlowSimulator';
 import { CustomAssetCreator } from './components/B20Studio/CustomAssetCreator';
@@ -12,6 +13,7 @@ import { TransactionLogDrawer } from './components/TransactionLogDrawer';
 import { QuickActionsMenu } from './components/QuickActions/QuickActionsMenu';
 import { QuickActionsSidebar } from './components/QuickActions/QuickActionsSidebar';
 import { BridgeStatusModal } from './components/QuickActions/BridgeStatusModal';
+import { ShareStateModal } from './components/QuickActions/ShareStateModal';
 import { WalletConnectModal } from './components/Wallet/WalletConnectModal';
 import { 
   BASE_NETWORKS, 
@@ -43,6 +45,8 @@ export default function App() {
   const [holders, setHolders] = useState<CapTableHolder[]>(INITIAL_HOLDERS);
   const [isBridgeModalOpen, setIsBridgeModalOpen] = useState<boolean>(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState<boolean>(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
 
   // Application & Network Configuration
   const [config, setConfig] = useState<AppConfig>(() => {
@@ -214,10 +218,48 @@ export default function App() {
         onOpenBridgeStatus={() => setIsBridgeModalOpen(true)}
         onRequestFaucet={handleFaucetClaim}
         onSelectTab={(tabId) => setActiveTab(tabId)}
+        onOpenShareState={() => setIsShareModalOpen(true)}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 md:pl-20 py-6 sm:py-8">
+        {/* Surfaced directly in Main View: Global Command Palette Quick Trigger Bar */}
+        <div 
+          onClick={() => setIsCommandPaletteOpen(true)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setIsCommandPaletteOpen(true); }}
+          className="mb-6 flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-[#11141d]/90 via-[#141824]/90 to-[#11141d]/90 backdrop-blur-xl border border-[#232938] hover:border-[#0052ff]/50 shadow-xl shadow-black/40 hover:shadow-[#0052ff]/10 transition-all duration-300 cursor-pointer group"
+          title="Open Global Command Palette (Ctrl+K)"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="h-9 w-9 rounded-xl bg-[#0052ff]/15 border border-[#0052ff]/30 text-[#3c8aff] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#0052ff]/25 transition-all shrink-0">
+              <Command className="h-4 w-4" />
+            </div>
+            <div className="truncate">
+              <div className="flex items-center gap-2">
+                <span className="text-xs sm:text-sm font-bold text-white group-hover:text-[#3c8aff] transition-colors">
+                  Command Palette
+                </span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded font-mono font-bold bg-[#0052ff]/20 text-[#3c8aff] border border-[#0052ff]/30">
+                  Global
+                </span>
+              </div>
+              <p className="text-[11px] text-[#8a91a0] truncate mt-0.5">
+                Quickly navigate tabs or run actions: Faucet, Bridge, Share Snapshot, Mini App, Paymaster...
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#1a1d26] border border-[#2a3040] text-[11px] font-mono text-[#dee1e7] shadow-inner group-hover:border-[#0052ff]/40 transition-colors">
+              <span className="font-semibold text-white">Ctrl</span>
+              <span className="text-[#717886]">+</span>
+              <span className="font-semibold text-white">K</span>
+            </div>
+            <span className="text-[11px] text-[#717886] font-mono hidden md:inline">or ⌘K</span>
+          </div>
+        </div>
         {activeTab === 'miniapp' && (
           <BaseMiniAppView
             currentNetwork={currentNetwork}
@@ -305,7 +347,7 @@ export default function App() {
         currentNetwork={currentNetwork}
       />
 
-      {/* Floating Quick Actions Menu / Command Shortcuts */}
+      {/* Floating Quick Actions Menu / Command Palette (Ctrl+K) */}
       <QuickActionsMenu
         currentNetwork={currentNetwork}
         wallet={wallet}
@@ -314,6 +356,22 @@ export default function App() {
         onSelectTab={(tabId) => setActiveTab(tabId)}
         onQuickConnect={() => setIsWalletModalOpen(true)}
         contractAddress={asset.tokenAddress}
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onOpen={() => setIsCommandPaletteOpen(true)}
+        onOpenShareState={() => setIsShareModalOpen(true)}
+        onChangeNetwork={(net) => setCurrentNetwork(net)}
+        asset={asset}
+      />
+
+      {/* Share State Canvas Snapshot Modal */}
+      <ShareStateModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        asset={asset}
+        holders={holders}
+        currentNetwork={currentNetwork}
+        autoPromptDownload={true}
       />
 
       {/* Bridge Health & Status Modal */}

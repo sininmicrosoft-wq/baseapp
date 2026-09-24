@@ -214,7 +214,7 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
           <button
             onClick={handleIndicatorClick}
             aria-label={`Network Status: ${healthStatus} (${latency !== null ? `${latency}ms` : 'offline'})`}
-            className={`relative h-10 w-10 rounded-xl flex flex-col items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 active:scale-95 ${
+            className={`relative h-10 w-10 rounded-xl flex flex-col items-center justify-center backdrop-blur-md transition-all duration-300 ease-out focus:outline-none focus:ring-2 hover:scale-110 hover:shadow-[0_0_18px_rgba(0,82,255,0.45)] active:scale-95 ${
               healthStatus === 'healthy'
                 ? 'bg-[#66c800]/15 border border-[#66c800]/50 text-[#66c800] shadow-[0_0_14px_rgba(102,200,0,0.6),0_0_24px_rgba(102,200,0,0.25)] hover:bg-[#66c800]/25'
                 : healthStatus === 'degraded'
@@ -437,10 +437,10 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
           <button
             onClick={onQuickConnect}
             aria-label="Quick Connect Wallet"
-            className={`relative h-10 w-10 rounded-xl flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-[#0052ff]/50 active:scale-95 ${
+            className={`relative h-10 w-10 rounded-xl flex items-center justify-center backdrop-blur-md transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-[#0052ff]/50 active:scale-95 hover:scale-110 hover:shadow-[0_0_18px_rgba(0,82,255,0.45)] ${
               wallet?.isConnected
-                ? 'bg-[#0052ff]/15 text-[#3c8aff] hover:bg-[#0052ff]/25 border border-[#0052ff]/30 shadow-md shadow-[#0052ff]/20'
-                : 'text-[#8a91a0] hover:text-white hover:bg-[#1a1d26] ring-1 ring-[#0052ff]/30'
+                ? 'bg-[#0052ff]/15 text-[#3c8aff] hover:bg-[#0052ff]/25 border border-[#0052ff]/40 shadow-md shadow-[#0052ff]/20 hover:border-[#0052ff]/70'
+                : 'bg-[#131722]/80 text-[#8a91a0] hover:text-white hover:bg-[#0052ff]/20 border border-white/[0.08] hover:border-[#0052ff]/50'
             }`}
           >
             {wallet?.isConnected ? (
@@ -495,7 +495,7 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
           <button
             onClick={onOpenBridgeStatus}
             aria-label="Check Bridge Status"
-            className="relative h-10 w-10 rounded-xl flex items-center justify-center text-[#8a91a0] hover:text-white hover:bg-[#1a1d26] active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-[#0052ff]/50"
+            className="relative h-10 w-10 rounded-xl flex items-center justify-center bg-[#131722]/80 backdrop-blur-md text-[#8a91a0] hover:text-white hover:bg-[#0052ff]/20 border border-white/[0.08] hover:border-[#0052ff]/50 hover:scale-110 hover:shadow-[0_0_18px_rgba(0,82,255,0.45)] active:scale-95 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-[#0052ff]/50"
           >
             <ArrowDownUp className="h-4 w-4 text-[#3c8aff] group-hover:scale-110 transition-transform" />
             
@@ -527,7 +527,7 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
           <button
             onClick={handleOpenExplorer}
             aria-label="View Explorer"
-            className="h-10 w-10 rounded-xl flex items-center justify-center text-[#8a91a0] hover:text-white hover:bg-[#1a1d26] active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-[#ffd12f]/50"
+            className="relative h-10 w-10 rounded-xl flex items-center justify-center bg-[#131722]/80 backdrop-blur-md text-[#8a91a0] hover:text-[#ffd12f] hover:bg-[#0052ff]/20 border border-white/[0.08] hover:border-[#0052ff]/50 hover:scale-110 hover:shadow-[0_0_18px_rgba(0,82,255,0.45)] active:scale-95 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-[#ffd12f]/50"
           >
             <ExternalLink className="h-4 w-4 text-[#ffd12f] group-hover:scale-110 transition-transform" />
           </button>
@@ -553,10 +553,10 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
           <button
             onClick={handleFaucet}
             aria-label="Request Faucet Funds"
-            className={`h-10 w-10 rounded-xl flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-[#66c800]/50 active:scale-95 ${
+            className={`relative h-10 w-10 rounded-xl flex items-center justify-center backdrop-blur-md hover:scale-110 hover:shadow-[0_0_18px_rgba(0,82,255,0.45)] active:scale-95 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-[#66c800]/50 border ${
               faucetClaimed 
-                ? 'bg-[#66c800]/20 text-[#66c800]' 
-                : 'text-[#8a91a0] hover:text-white hover:bg-[#1a1d26]'
+                ? 'bg-[#66c800]/20 text-[#66c800] border-[#66c800]/40 shadow-[0_0_12px_rgba(102,200,0,0.3)]' 
+                : 'bg-[#131722]/80 text-[#8a91a0] hover:text-white hover:bg-[#0052ff]/20 border-white/[0.08] hover:border-[#0052ff]/50'
             }`}
           >
             {faucetClaimed ? (
@@ -592,7 +592,7 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
               setIsShareModalOpen(true);
             }}
             aria-label="Share State Snapshot"
-            className="h-10 w-10 rounded-xl flex items-center justify-center text-[#8a91a0] hover:text-white hover:bg-[#1a1d26] active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-[#0052ff]/50"
+            className="relative h-10 w-10 rounded-xl flex items-center justify-center bg-[#131722]/80 backdrop-blur-md text-[#8a91a0] hover:text-white hover:bg-[#0052ff]/20 border border-white/[0.08] hover:border-[#0052ff]/50 hover:scale-110 hover:shadow-[0_0_18px_rgba(0,82,255,0.45)] active:scale-95 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-[#0052ff]/50"
           >
             <Share2 className="h-4 w-4 text-[#3c8aff] group-hover:scale-110 transition-transform" />
           </button>
@@ -618,10 +618,10 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
           <button
             onClick={() => onSelectTab('config')}
             aria-label="Settings and App Config"
-            className={`h-10 w-10 rounded-xl flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-[#0052ff]/50 active:scale-95 ${
+            className={`relative h-10 w-10 rounded-xl flex items-center justify-center backdrop-blur-md hover:scale-110 hover:shadow-[0_0_18px_rgba(0,82,255,0.45)] active:scale-95 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-[#0052ff]/50 border ${
               activeTab === 'config'
-                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
-                : 'text-[#8a91a0] hover:text-white hover:bg-[#1a1d26]'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/40 border-[#0052ff]'
+                : 'bg-[#131722]/80 text-[#8a91a0] hover:text-white hover:bg-[#0052ff]/20 border-white/[0.08] hover:border-[#0052ff]/50'
             }`}
           >
             <Settings className={`h-4 w-4 group-hover:rotate-45 transition-transform ${
@@ -649,10 +649,10 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
           <button
             onClick={() => onSelectTab('miniapp')}
             aria-label="Switch to Mini App Mode"
-            className={`h-10 w-10 rounded-xl flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-[#a855f7]/50 active:scale-95 ${
+            className={`relative h-10 w-10 rounded-xl flex items-center justify-center backdrop-blur-md hover:scale-110 hover:shadow-[0_0_18px_rgba(0,82,255,0.45)] active:scale-95 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-[#a855f7]/50 border ${
               activeTab === 'miniapp'
-                ? 'bg-[#a855f7] text-white shadow-md shadow-[#a855f7]/30'
-                : 'text-[#8a91a0] hover:text-white hover:bg-[#1a1d26]'
+                ? 'bg-[#a855f7] text-white shadow-md shadow-[#a855f7]/40 border-[#a855f7]'
+                : 'bg-[#131722]/80 text-[#8a91a0] hover:text-white hover:bg-[#0052ff]/20 border-white/[0.08] hover:border-[#0052ff]/50'
             }`}
           >
             <Smartphone className={`h-4 w-4 group-hover:scale-110 transition-transform ${
