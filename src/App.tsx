@@ -204,6 +204,7 @@ export default function App() {
         logs={logs}
         onSelectSimulatorFlow={handleSelectSimulatorFlow}
         onOpenConnectWallet={() => setIsWalletModalOpen(true)}
+        rpcUrl={config.rpcUrls[currentNetwork.id] || currentNetwork.rpcUrl}
       />
 
       {/* Persistent Left Vertical Quick Actions Sidebar (Glassmorphism) */}

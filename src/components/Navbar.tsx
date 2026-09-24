@@ -21,6 +21,7 @@ import { BaseNetwork, NetworkId, WalletAccount, AssetMetadata, CapTableHolder, T
 import { BASE_NETWORKS } from '../data/mockBaseData';
 import { shortenAddress, formatNumber, triggerConfetti } from '../utils/web3Helper';
 import { GlobalSearchBar } from './Search/GlobalSearchBar';
+import { RpcLatencyMonitor } from './Network/RpcLatencyMonitor';
 
 interface NavbarProps {
   activeTab: string;
@@ -37,6 +38,7 @@ interface NavbarProps {
   logs?: TxLogEntry[];
   onSelectSimulatorFlow?: (flowId: ScenarioFlow) => void;
   onOpenConnectWallet?: () => void;
+  rpcUrl?: string;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -54,11 +56,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   logs = [],
   onSelectSimulatorFlow,
   onOpenConnectWallet,
+  rpcUrl,
 }) => {
   const [showNetworkMenu, setShowNetworkMenu] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [faucetClaiming, setFaucetClaiming] = useState(false);
+  const activeRpcUrl = rpcUrl || currentNetwork.rpcUrl;
 
   const handleConnectSmartWallet = () => {
     // Generate or restore Base Smart Wallet
@@ -157,6 +161,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="hidden md:flex items-center gap-1 text-[#717886]">
               <span>Finality:</span>
               <span className="font-mono text-[#f0f2f5]">~2.0s</span>
+            </div>
+
+            <div className="hidden sm:flex items-center gap-1.5 text-[#717886]">
+              <span>Ping:</span>
+              <RpcLatencyMonitor rpcUrl={activeRpcUrl} networkName={currentNetwork.name} compact={true} />
             </div>
           </div>
         </div>
@@ -259,6 +268,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Settings className="h-4 w-4" />
             </button>
+
+            {/* Real-time Network Latency Monitor */}
+            <RpcLatencyMonitor rpcUrl={activeRpcUrl} networkName={currentNetwork.name} />
 
             {/* Network Selector Dropdown */}
             <div className="relative">
