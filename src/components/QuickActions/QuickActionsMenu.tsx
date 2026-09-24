@@ -30,7 +30,9 @@ import {
   TrendingUp,
   Vault,
   ArrowDownCircle,
-  ArrowUpCircle
+  ArrowUpCircle,
+  MessageSquareCode,
+  Boxes
 } from 'lucide-react';
 import { BaseNetwork, WalletAccount, AssetMetadata } from '../../types/base';
 import { BASE_NETWORKS } from '../../data/mockBaseData';
@@ -360,6 +362,54 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       },
     },
     {
+      id: 'tab-messengers',
+      title: 'Cross Domain Messengers (L1 ↔ L2)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'Higher-level messaging API, xDomainMessageSender, replayable execution, and nonce version packing',
+      icon: MessageSquareCode,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: '0x4200...07',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
+      id: 'tab-batcher',
+      title: 'Batcher (Batch Submitter) Specification',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'L2 to L1 DA pipeline, EIP-4844 blob frames, Brotli compression, and Holocene invariants',
+      icon: Boxes,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: 'L1 DA',
+      badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
+      id: 'tab-proofs',
+      title: 'Azul Proof System (TEE + ZK Provers)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'Proposer, Challenger, Registrar, AWS Nitro TEE, and permissionless ZK dispute games',
+      icon: ShieldCheck,
+      iconColor: 'text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: 'Azul Proofs',
+      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
       id: 'tab-config',
       title: 'Settings & App Configuration',
       category: 'tabs' as const,
@@ -602,6 +652,57 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       badgeColor: 'bg-[#fc401f]/20 text-[#fc401f]',
       action: () => {
         navigator.clipboard.writeText('0x4200000000000000000000000000000000000016');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-l2crossdomainmessenger',
+      title: 'Copy L2CrossDomainMessenger Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Higher-level messaging predeploy 0x4200000000000000000000000000000000000007',
+      icon: Copy,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: '0x4200...07',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        navigator.clipboard.writeText('0x4200000000000000000000000000000000000007');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-batcher-inbox',
+      title: 'Copy Batcher Inbox Address (EOA)',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Designated EOA 0xFf00000000000000000000000000000000008453 for Base L1 blob DA',
+      icon: Copy,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: '0xFf...8453',
+      badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
+      action: () => {
+        navigator.clipboard.writeText('0xFf00000000000000000000000000000000008453');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-dispute-factory',
+      title: 'Copy DisputeGameFactory Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Azul Dispute Game Factory 0x43edB88C4B80fDD2AdFF2412A7BebF9dF42cB40e on Ethereum L1',
+      icon: Copy,
+      iconColor: 'text-[#0052ff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: '0x43ed...B40e',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        navigator.clipboard.writeText('0x43edB88C4B80fDD2AdFF2412A7BebF9dF42cB40e');
         triggerConfetti();
         handleToggleOpen(false);
       },

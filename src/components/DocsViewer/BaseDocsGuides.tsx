@@ -20,7 +20,10 @@ import {
   ArrowLeftRight,
   ArrowDownUp,
   ArrowDownCircle,
-  ArrowUpCircle
+  ArrowUpCircle,
+  MessageSquareCode,
+  Boxes,
+  ShieldCheck
 } from 'lucide-react';
 import { ScenarioFlow, BaseNetwork } from '../../types/base';
 import { BaseProtocolOverview } from './BaseProtocolOverview';
@@ -30,6 +33,9 @@ import { BaseDeFiIntegrationsViewer } from './BaseDeFiIntegrationsViewer';
 import { BaseStandardBridgesViewer } from './BaseStandardBridgesViewer';
 import { BaseDepositsViewer } from './BaseDepositsViewer';
 import { BaseWithdrawalsViewer } from './BaseWithdrawalsViewer';
+import { BaseCrossDomainMessengersViewer } from './BaseCrossDomainMessengersViewer';
+import { BaseBatcherSpecViewer } from './BaseBatcherSpecViewer';
+import { BaseAzulProofsViewer } from './BaseAzulProofsViewer';
 
 interface BaseDocsGuidesProps {
   onSelectSimulatorFlow: (flowId: ScenarioFlow) => void;
@@ -40,7 +46,7 @@ export const BaseDocsGuides: React.FC<BaseDocsGuidesProps> = ({
   onSelectSimulatorFlow,
   currentNetwork,
 }) => {
-  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'deposits' | 'withdrawals' | 'defi' | 'b20'>('protocol');
+  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'deposits' | 'withdrawals' | 'messengers' | 'batcher' | 'proofs' | 'defi' | 'b20'>('protocol');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const guides = [
@@ -208,6 +214,42 @@ await tokenContract.write.setTransfersPaused([true]);`,
           </button>
 
           <button
+            onClick={() => setActiveSection('messengers')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'messengers'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <MessageSquareCode className="h-4 w-4" />
+            <span>Cross Domain Messengers</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSection('batcher')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'batcher'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <Boxes className="h-4 w-4" />
+            <span>Batcher (L1 DA)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSection('proofs')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'proofs'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <ShieldCheck className="h-4 w-4" />
+            <span>Azul Proofs</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('defi')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
               activeSection === 'defi'
@@ -261,7 +303,16 @@ await tokenContract.write.setTransfersPaused([true]);`,
       {/* SECTION 6: WITHDRAWALS & FAULT PROOFS (3-STEP FLOW) */}
       {activeSection === 'withdrawals' && <BaseWithdrawalsViewer currentNetwork={currentNetwork} />}
 
-      {/* SECTION 7: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
+      {/* SECTION 7: CROSS DOMAIN MESSENGERS (L1 ↔ L2) */}
+      {activeSection === 'messengers' && <BaseCrossDomainMessengersViewer currentNetwork={currentNetwork} />}
+
+      {/* SECTION 8: BATCHER / BATCH SUBMITTER (L2 -> L1 DA) */}
+      {activeSection === 'batcher' && <BaseBatcherSpecViewer currentNetwork={currentNetwork} />}
+
+      {/* SECTION 9: AZUL PROOF SYSTEM (TEE + ZK MULTI-PROVER) */}
+      {activeSection === 'proofs' && <BaseAzulProofsViewer currentNetwork={currentNetwork} />}
+
+      {/* SECTION 10: INTEGRATE DEFI (0X, LENDING, BORROWING, EARN) */}
       {activeSection === 'defi' && <BaseDeFiIntegrationsViewer currentNetwork={currentNetwork} />}
 
       {/* SECTION 7: B20 ASSET RECIPES */}
