@@ -31,6 +31,7 @@ import {
 } from '../../types/base';
 import { generateTxHash, triggerConfetti, formatNumber, shortenAddress } from '../../utils/web3Helper';
 import { notifyMiniAppReady, detectMiniAppContext } from '../../utils/miniAppHelper';
+import { RwaPriceVolumeChart } from './RwaPriceVolumeChart';
 
 interface BaseMiniAppViewProps {
   currentNetwork: BaseNetwork;
@@ -284,6 +285,9 @@ export const BaseMiniAppView: React.FC<BaseMiniAppViewProps> = ({
                 <span>Mint +50 {asset.symbol}</span>
               </button>
             </div>
+
+            {/* Recharts Area Chart: Historical Token Price & Daily Volume Trends */}
+            <RwaPriceVolumeChart asset={asset} userBalance={userBalance} />
 
             {/* Asset Metadata Sheet */}
             <div className="p-3 rounded-xl bg-[#111319] border border-[#1f232b] space-y-2 text-xs">
