@@ -23,7 +23,8 @@ import {
   Compass,
   Globe,
   Radio,
-  BookOpen
+  BookOpen,
+  Cpu
 } from 'lucide-react';
 import { BaseNetwork, WalletAccount, AssetMetadata } from '../../types/base';
 import { BASE_NETWORKS } from '../../data/mockBaseData';
@@ -257,6 +258,22 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       },
     },
     {
+      id: 'tab-predeploys',
+      title: 'Base Genesis Predeploys (0x4200...)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: '21 genesis system contracts: WETH9, L2StandardBridge, EAS, GasPriceOracle, L1Block',
+      icon: Cpu,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: 'Genesis 0x4200',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
       id: 'tab-config',
       title: 'Settings & App Configuration',
       category: 'tabs' as const,
@@ -366,6 +383,40 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       badge: copiedWallet ? 'Copied!' : 'Copy',
       badgeColor: copiedWallet ? 'bg-[#66c800]/20 text-[#66c800]' : 'bg-white/10 text-white',
       action: handleCopyWallet,
+    },
+    {
+      id: 'action-copy-weth',
+      title: 'Copy WETH9 Predeploy Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Deterministic 0x4200000000000000000000000000000000000006',
+      icon: Copy,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: 'WETH9',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        navigator.clipboard.writeText('0x4200000000000000000000000000000000000006');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-eas',
+      title: 'Copy EAS Attestation Predeploy Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Deterministic 0x4200000000000000000000000000000000000021',
+      icon: Copy,
+      iconColor: 'text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: 'EAS',
+      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      action: () => {
+        navigator.clipboard.writeText('0x4200000000000000000000000000000000000021');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
     },
     {
       id: 'action-explorer',

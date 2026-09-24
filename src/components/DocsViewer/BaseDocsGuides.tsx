@@ -14,10 +14,12 @@ import {
   Copy,
   Check,
   Network,
-  Layers
+  Layers,
+  Cpu
 } from 'lucide-react';
 import { ScenarioFlow, BaseNetwork } from '../../types/base';
 import { BaseProtocolOverview } from './BaseProtocolOverview';
+import { BasePredeploysViewer } from './BasePredeploysViewer';
 
 interface BaseDocsGuidesProps {
   onSelectSimulatorFlow: (flowId: ScenarioFlow) => void;
@@ -28,7 +30,7 @@ export const BaseDocsGuides: React.FC<BaseDocsGuidesProps> = ({
   onSelectSimulatorFlow,
   currentNetwork,
 }) => {
-  const [activeSection, setActiveSection] = useState<'protocol' | 'b20'>('protocol');
+  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'b20'>('protocol');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const guides = [
@@ -136,6 +138,18 @@ await tokenContract.write.setTransfersPaused([true]);`,
           </button>
 
           <button
+            onClick={() => setActiveSection('predeploys')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'predeploys'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <Cpu className="h-4 w-4" />
+            <span>Base Genesis Predeploys</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('b20')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
               activeSection === 'b20'
@@ -162,7 +176,10 @@ await tokenContract.write.setTransfersPaused([true]);`,
       {/* SECTION 1: PROTOCOL ARCHITECTURE */}
       {activeSection === 'protocol' && <BaseProtocolOverview currentNetwork={currentNetwork} />}
 
-      {/* SECTION 2: B20 ASSET RECIPES */}
+      {/* SECTION 2: BASE PREDEPLOYED SYSTEM CONTRACTS */}
+      {activeSection === 'predeploys' && <BasePredeploysViewer currentNetwork={currentNetwork} />}
+
+      {/* SECTION 3: B20 ASSET RECIPES */}
       {activeSection === 'b20' && (
         <div className="space-y-6 animate-fadeIn">
           {/* Header */}
