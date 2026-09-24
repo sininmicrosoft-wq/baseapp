@@ -207,6 +207,8 @@ export default function App() {
         currentNetwork={currentNetwork}
         activeTab={activeTab}
         wallet={wallet}
+        asset={asset}
+        holders={holders}
         rpcUrl={config.rpcUrls[currentNetwork.id] || currentNetwork.rpcUrl}
         onQuickConnect={() => setIsWalletModalOpen(true)}
         onOpenBridgeStatus={() => setIsBridgeModalOpen(true)}

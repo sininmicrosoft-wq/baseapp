@@ -15,10 +15,13 @@ import {
   Wifi,
   WifiOff,
   RefreshCw,
-  Radio
+  Radio,
+  Share2
 } from 'lucide-react';
-import { BaseNetwork, WalletAccount } from '../../types/base';
+import { BaseNetwork, WalletAccount, AssetMetadata, CapTableHolder } from '../../types/base';
 import { shortenAddress, triggerConfetti } from '../../utils/web3Helper';
+import { ShareStateModal } from './ShareStateModal';
+import { INITIAL_ASSET, INITIAL_HOLDERS } from '../../data/mockBaseData';
 
 interface QuickActionsSidebarProps {
   currentNetwork: BaseNetwork;
@@ -29,6 +32,9 @@ interface QuickActionsSidebarProps {
   onSelectTab: (tabId: string) => void;
   onQuickConnect: () => void;
   rpcUrl?: string;
+  asset?: AssetMetadata;
+  holders?: CapTableHolder[];
+  onOpenShareState?: () => void;
 }
 
 export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
@@ -40,10 +46,17 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
   onSelectTab,
   onQuickConnect,
   rpcUrl,
+  asset,
+  holders,
+  onOpenShareState,
 }) => {
   const [mounted, setMounted] = useState(false);
   const [faucetClaimed, setFaucetClaimed] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  const effectiveAsset = asset || INITIAL_ASSET;
+  const effectiveHolders = holders || INITIAL_HOLDERS;
 
   // Persistent Network Status Indicator State (Glows Green, Yellow, or Red)
   const [healthStatus, setHealthStatus] = useState<'healthy' | 'degraded' | 'disconnected'>('healthy');
@@ -564,6 +577,37 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
           </div>
         </div>
 
+        {/* BUTTON: Share State Snapshot (HTML5 Canvas HD) */}
+        <div 
+          className={`relative group transition-all duration-500 ${
+            mounted ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 -translate-x-4 scale-95'
+          }`}
+          style={{ transitionDelay: '290ms' }}
+        >
+          <button
+            onClick={() => {
+              if (onOpenShareState) {
+                onOpenShareState();
+              }
+              setIsShareModalOpen(true);
+            }}
+            aria-label="Share State Snapshot"
+            className="h-10 w-10 rounded-xl flex items-center justify-center text-[#8a91a0] hover:text-white hover:bg-[#1a1d26] active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-[#0052ff]/50"
+          >
+            <Share2 className="h-4 w-4 text-[#3c8aff] group-hover:scale-110 transition-transform" />
+          </button>
+
+          {/* Tooltip with 300ms hover delay */}
+          <div className="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-[#141720]/95 backdrop-blur-md border border-[#2b3140] text-xs text-white shadow-2xl pointer-events-none opacity-0 -translate-x-2.5 scale-95 transition-all duration-150 delay-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-100 group-hover:duration-200 group-hover:delay-300 whitespace-nowrap z-50">
+            <div className="font-bold flex items-center gap-1.5">
+              <span>Share State</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#0052ff]/20 text-[#3c8aff] font-mono font-bold">Canvas HD</span>
+            </div>
+            <div className="text-[10px] text-[#8a91a0] mt-0.5">Snapshot RWA metrics & cap table</div>
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-[5px] border-transparent border-r-[#2b3140]"></div>
+          </div>
+        </div>
+
         {/* BUTTON 4: Settings (App Config) */}
         <div 
           className={`relative group transition-all duration-500 ${
@@ -628,6 +672,16 @@ export const QuickActionsSidebar: React.FC<QuickActionsSidebarProps> = ({
         </div>
 
       </div>
+
+      {/* Share State Canvas Snapshot Modal */}
+      <ShareStateModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        asset={effectiveAsset}
+        holders={effectiveHolders}
+        currentNetwork={currentNetwork}
+        autoPromptDownload={true}
+      />
     </aside>
   );
 };
