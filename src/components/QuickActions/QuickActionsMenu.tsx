@@ -28,7 +28,8 @@ import {
   Package,
   ArrowLeftRight,
   TrendingUp,
-  Vault
+  Vault,
+  ArrowDownCircle
 } from 'lucide-react';
 import { BaseNetwork, WalletAccount, AssetMetadata } from '../../types/base';
 import { BASE_NETWORKS } from '../../data/mockBaseData';
@@ -326,6 +327,22 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       },
     },
     {
+      id: 'tab-deposits',
+      title: 'Deposited Transactions & Guaranteed Gas (Type 0x7E)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'EIP-2718 Type 0x7E, address aliasing, sourceHash derivation, and EIP-1559 gas market',
+      icon: ArrowDownCircle,
+      iconColor: 'text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: 'Type 0x7E',
+      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
       id: 'tab-config',
       title: 'Settings & App Configuration',
       category: 'tabs' as const,
@@ -553,6 +570,22 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
         navigator.clipboard.writeText('0x4200000000000000000000000000000000000010');
         triggerConfetti();
         handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-address-aliasing',
+      title: 'Address Aliasing Formula (0x1111...1111)',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Calculate (L1 Contract Address + 0x1111...1111) % 2^160 for L2 deposit safety',
+      icon: ShieldCheck,
+      iconColor: 'text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: 'Aliasing',
+      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
       },
     },
     {
