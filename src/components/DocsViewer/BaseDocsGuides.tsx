@@ -15,11 +15,13 @@ import {
   Check,
   Network,
   Layers,
-  Cpu
+  Cpu,
+  Package
 } from 'lucide-react';
 import { ScenarioFlow, BaseNetwork } from '../../types/base';
 import { BaseProtocolOverview } from './BaseProtocolOverview';
 import { BasePredeploysViewer } from './BasePredeploysViewer';
+import { BasePreinstallsViewer } from './BasePreinstallsViewer';
 
 interface BaseDocsGuidesProps {
   onSelectSimulatorFlow: (flowId: ScenarioFlow) => void;
@@ -30,7 +32,7 @@ export const BaseDocsGuides: React.FC<BaseDocsGuidesProps> = ({
   onSelectSimulatorFlow,
   currentNetwork,
 }) => {
-  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'b20'>('protocol');
+  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'b20'>('protocol');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const guides = [
@@ -150,6 +152,18 @@ await tokenContract.write.setTransfersPaused([true]);`,
           </button>
 
           <button
+            onClick={() => setActiveSection('preinstalls')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'preinstalls'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <Package className="h-4 w-4" />
+            <span>Base Genesis Preinstalls</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('b20')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
               activeSection === 'b20'
@@ -179,7 +193,10 @@ await tokenContract.write.setTransfersPaused([true]);`,
       {/* SECTION 2: BASE PREDEPLOYED SYSTEM CONTRACTS */}
       {activeSection === 'predeploys' && <BasePredeploysViewer currentNetwork={currentNetwork} />}
 
-      {/* SECTION 3: B20 ASSET RECIPES */}
+      {/* SECTION 3: BASE PREINSTALLED UTILITY CONTRACTS */}
+      {activeSection === 'preinstalls' && <BasePreinstallsViewer currentNetwork={currentNetwork} />}
+
+      {/* SECTION 4: B20 ASSET RECIPES */}
       {activeSection === 'b20' && (
         <div className="space-y-6 animate-fadeIn">
           {/* Header */}

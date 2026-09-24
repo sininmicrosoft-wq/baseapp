@@ -24,7 +24,8 @@ import {
   Globe,
   Radio,
   BookOpen,
-  Cpu
+  Cpu,
+  Package
 } from 'lucide-react';
 import { BaseNetwork, WalletAccount, AssetMetadata } from '../../types/base';
 import { BASE_NETWORKS } from '../../data/mockBaseData';
@@ -274,6 +275,22 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       },
     },
     {
+      id: 'tab-preinstalls',
+      title: 'Base Genesis Preinstalls (Utilities & Safe)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: '14 third-party genesis utilities: SafeL2, Multicall3, Permit2, EntryPoint v0.7, CreateX',
+      icon: Package,
+      iconColor: 'text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: 'Preinstalls',
+      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
       id: 'tab-config',
       title: 'Settings & App Configuration',
       category: 'tabs' as const,
@@ -414,6 +431,74 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
       action: () => {
         navigator.clipboard.writeText('0x4200000000000000000000000000000000000021');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-multicall3',
+      title: 'Copy Multicall3 Preinstall Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Deterministic 0xcA11bde05977b3631167028862bE2a173976CA11',
+      icon: Copy,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: 'Multicall3',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        navigator.clipboard.writeText('0xcA11bde05977b3631167028862bE2a173976CA11');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-safel2',
+      title: 'Copy SafeL2 Multisig Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Deterministic 0xfb1bffC9d739B8D520DaF37dF666da4C687191EA',
+      icon: Copy,
+      iconColor: 'text-[#66c800]',
+      iconBg: 'bg-[#66c800]/15 border border-[#66c800]/30',
+      badge: 'SafeL2',
+      badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
+      action: () => {
+        navigator.clipboard.writeText('0xfb1bffC9d739B8D520DaF37dF666da4C687191EA');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-entrypoint',
+      title: 'Copy ERC-4337 v0.7.0 EntryPoint',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Deterministic 0x0000000071727De22E5E9d8BAf0edAc6f37da032',
+      icon: Copy,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: 'EntryPoint v0.7',
+      badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
+      action: () => {
+        navigator.clipboard.writeText('0x0000000071727De22E5E9d8BAf0edAc6f37da032');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-permit2',
+      title: 'Copy Permit2 Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'Deterministic 0x000000000022D473030F116dDEE9F6B43aC78BA3',
+      icon: Copy,
+      iconColor: 'text-[#dee1e7]',
+      iconBg: 'bg-white/10 border border-white/20',
+      badge: 'Permit2',
+      badgeColor: 'bg-white/10 text-white',
+      action: () => {
+        navigator.clipboard.writeText('0x000000000022D473030F116dDEE9F6B43aC78BA3');
         triggerConfetti();
         handleToggleOpen(false);
       },
