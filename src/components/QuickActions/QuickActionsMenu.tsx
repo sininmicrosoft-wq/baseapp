@@ -444,6 +444,22 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       },
     },
     {
+      id: 'tab-registrar',
+      title: 'Registrar Specification (TEE Signer Registry)',
+      category: 'tabs' as const,
+      categoryLabel: 'Navigation',
+      subtitle: 'AWS Nitro enclave attestation, Boundless ZK proving, and TEEProverRegistry.registerSigner',
+      icon: KeyRound,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: 'Registrar',
+      badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
+      action: () => {
+        handleToggleOpen(false);
+        onSelectTab('guides');
+      },
+    },
+    {
       id: 'tab-config',
       title: 'Settings & App Configuration',
       category: 'tabs' as const,
@@ -771,6 +787,40 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       badgeColor: 'bg-[#66c800]/20 text-[#66c800]',
       action: () => {
         navigator.clipboard.writeText('0x5C246d5E4929D37e8c3F17b20464f1696F158F89');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-tee-registry',
+      title: 'Copy TEEProverRegistry Address',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'TEEProverRegistry 0x7eE699B56972e90e7f7b3a0f18835848C1897eE6 for accepted TEE signers',
+      icon: KeyRound,
+      iconColor: 'text-[#ffd12f]',
+      iconBg: 'bg-[#ffd12f]/15 border border-[#ffd12f]/30',
+      badge: '0x7eE6...7eE6',
+      badgeColor: 'bg-[#ffd12f]/20 text-[#ffd12f]',
+      action: () => {
+        navigator.clipboard.writeText('0x7eE699B56972e90e7f7b3a0f18835848C1897eE6');
+        triggerConfetti();
+        handleToggleOpen(false);
+      },
+    },
+    {
+      id: 'action-copy-nitro-verifier',
+      title: 'Copy NitroEnclaveVerifier Address (CRL)',
+      category: 'actions' as const,
+      categoryLabel: 'Quick Actions',
+      subtitle: 'NitroEnclaveVerifier 0x9b99f3C316e6f1B83802905187eF494E5105bF46 for durable revocation checks',
+      icon: ShieldCheck,
+      iconColor: 'text-[#3c8aff]',
+      iconBg: 'bg-[#0052ff]/15 border border-[#0052ff]/30',
+      badge: '0x9b99...bF46',
+      badgeColor: 'bg-[#0052ff]/20 text-[#3c8aff]',
+      action: () => {
+        navigator.clipboard.writeText('0x9b99f3C316e6f1B83802905187eF494E5105bF46');
         triggerConfetti();
         handleToggleOpen(false);
       },

@@ -25,7 +25,8 @@ import {
   Boxes,
   ShieldCheck,
   AlertTriangle,
-  Zap
+  Zap,
+  KeyRound
 } from 'lucide-react';
 import { ScenarioFlow, BaseNetwork } from '../../types/base';
 import { BaseProtocolOverview } from './BaseProtocolOverview';
@@ -40,6 +41,7 @@ import { BaseBatcherSpecViewer } from './BaseBatcherSpecViewer';
 import { BaseAzulProofsViewer } from './BaseAzulProofsViewer';
 import { BaseChallengerSpecViewer } from './BaseChallengerSpecViewer';
 import { BaseProposerSpecViewer } from './BaseProposerSpecViewer';
+import { BaseRegistrarSpecViewer } from './BaseRegistrarSpecViewer';
 
 interface BaseDocsGuidesProps {
   onSelectSimulatorFlow: (flowId: ScenarioFlow) => void;
@@ -50,7 +52,7 @@ export const BaseDocsGuides: React.FC<BaseDocsGuidesProps> = ({
   onSelectSimulatorFlow,
   currentNetwork,
 }) => {
-  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'deposits' | 'withdrawals' | 'messengers' | 'batcher' | 'proofs' | 'challenger' | 'proposer' | 'defi' | 'b20'>('protocol');
+  const [activeSection, setActiveSection] = useState<'protocol' | 'predeploys' | 'preinstalls' | 'bridges' | 'deposits' | 'withdrawals' | 'messengers' | 'batcher' | 'proofs' | 'challenger' | 'proposer' | 'registrar' | 'defi' | 'b20'>('protocol');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const guides = [
@@ -278,6 +280,18 @@ await tokenContract.write.setTransfersPaused([true]);`,
           </button>
 
           <button
+            onClick={() => setActiveSection('registrar')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeSection === 'registrar'
+                ? 'bg-[#0052ff] text-white shadow-md shadow-[#0052ff]/30'
+                : 'text-[#8a91a0] hover:text-white hover:bg-[#16181f]'
+            }`}
+          >
+            <KeyRound className="h-4 w-4" />
+            <span>Registrar (TEE Signers)</span>
+          </button>
+
+          <button
             onClick={() => setActiveSection('defi')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
               activeSection === 'defi'
@@ -343,6 +357,7 @@ await tokenContract.write.setTransfersPaused([true]);`,
           currentNetwork={currentNetwork} 
           onNavigateToChallenger={() => setActiveSection('challenger')}
           onNavigateToProposer={() => setActiveSection('proposer')}
+          onNavigateToRegistrar={() => setActiveSection('registrar')}
         />
       )}
 
@@ -359,6 +374,16 @@ await tokenContract.write.setTransfersPaused([true]);`,
         <BaseProposerSpecViewer 
           currentNetwork={currentNetwork} 
           onNavigateToProofs={() => setActiveSection('proofs')} 
+          onNavigateToChallenger={() => setActiveSection('challenger')}
+        />
+      )}
+
+      {/* SECTION 12: REGISTRAR SPECIFICATION (TEE SIGNER ATTESTATION & REGISTRY) */}
+      {activeSection === 'registrar' && (
+        <BaseRegistrarSpecViewer 
+          currentNetwork={currentNetwork} 
+          onNavigateToProofs={() => setActiveSection('proofs')} 
+          onNavigateToProposer={() => setActiveSection('proposer')}
           onNavigateToChallenger={() => setActiveSection('challenger')}
         />
       )}

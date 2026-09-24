@@ -35,12 +35,14 @@ interface BaseAzulProofsViewerProps {
   currentNetwork?: BaseNetwork;
   onNavigateToChallenger?: () => void;
   onNavigateToProposer?: () => void;
+  onNavigateToRegistrar?: () => void;
 }
 
 export const BaseAzulProofsViewer: React.FC<BaseAzulProofsViewerProps> = ({ 
   currentNetwork,
   onNavigateToChallenger,
-  onNavigateToProposer
+  onNavigateToProposer,
+  onNavigateToRegistrar
 }) => {
   const [activeTab, setActiveTab] = useState<'architecture' | 'components' | 'simulator' | 'contracts' | 'security'>('architecture');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -320,19 +322,30 @@ export const BaseAzulProofsViewer: React.FC<BaseAzulProofsViewerProps> = ({
               </div>
 
               {/* 3. Registrar */}
-              <div className="p-4 rounded-xl bg-[#101420] border border-[#1e2538] space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-[#ffd12f]/20 text-[#ffd12f]">
-                    <Fingerprint className="h-4 w-4" />
+              <div className="p-4 rounded-xl bg-[#101420] border border-[#1e2538] flex flex-col justify-between space-y-2">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-[#ffd12f]/20 text-[#ffd12f]">
+                      <Fingerprint className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white">3. Registrar</h4>
+                      <span className="text-[10px] font-mono text-[#8a91a0]">TEE Signer Registry</span>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-white">3. Registrar</h4>
-                    <span className="text-[10px] font-mono text-[#8a91a0]">TEE Signer Registry</span>
-                  </div>
+                  <p className="text-[11px] text-[#8a91a0] leading-relaxed">
+                    Maintains the onchain registry of accepted TEE signer identities. Discovers AWS Nitro instances, verifies attestation documents via Boundless/RISC Zero Groth16 proofs, and updates TEEProverRegistry on L1.
+                  </p>
                 </div>
-                <p className="text-[11px] text-[#8a91a0] leading-relaxed">
-                  Maintains the onchain registry of accepted TEE signer identities. Validates AWS Nitro Enclave cryptographic attestation documents, checking PCR measurements (PCR0, PCR1, PCR2) against authorized binary hashes.
-                </p>
+                {onNavigateToRegistrar && (
+                  <button
+                    onClick={onNavigateToRegistrar}
+                    className="w-full mt-2 py-1.5 px-2.5 rounded-lg bg-[#ffd12f]/15 hover:bg-[#ffd12f]/25 text-[#ffd12f] text-[11px] font-bold border border-[#ffd12f]/30 flex items-center justify-center gap-1 transition-colors"
+                  >
+                    <span>Explore Registrar Spec</span>
+                    <ChevronRight className="h-3 w-3" />
+                  </button>
+                )}
               </div>
 
               {/* 4. TEE Prover */}
